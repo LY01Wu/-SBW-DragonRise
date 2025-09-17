@@ -1,0 +1,104 @@
+plugins {
+    id "idea"
+    id "multiloader-loader"
+    id "net.minecraftforge.gradle" version "[6.0.24,6.2)"
+    id 'org.spongepowered.mixin' version '0.7.+'
+}
+
+minecraft {
+    mappings channel: "official", version: minecraft_version
+
+    // reobf = false
+    copyIdeResources = true
+
+    runs {
+        client {
+            workingDirectory file("runs/client")
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName "Client"
+            mods {
+                modClientRun {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory file("runs/server")
+            ideaModule "${rootProject.name}.${project.name}.main"
+            taskName "Server"
+            mods {
+                modServerRun {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        data {
+            workingDirectory file("runs/data")
+            ideaModule "${rootProject.name}.${project.name}.main"
+            args "--mod", mod_id, "--all", "--output", file("src/generated/resources/"), "--existing", file("src/main/resources/")
+            taskName "Data"
+            mods {
+                modDataRun {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+sourceSets.main.resources.srcDir "src/generated/resources"
+
+repositories {
+    // Put repositories for dependencies here
+    // ForgeGradle automatically adds the Forge maven and Maven Central for you
+
+    // If you have mod jar dependencies in ./libs, you can declare them as a repository like so.
+    // See https://docs.gradle.org/current/userguide/declaring_repositories.html#sub:flat_dir_resolver
+    // flatDir {
+    //     dir 'libs'
+    // }
+
+    maven {
+        url "https://cursemaven.com"
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+
+    maven {
+        url = "https://maven.theillusivec4.top/"
+    }
+
+    maven {
+        name = 'GeckoLib'
+        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        content {
+            includeGroupByRegex("software\\.bernie.*")
+            includeGroup("com.eliotlash.mclib")
+        }
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    implementation("net.sf.jopt-simple:jopt-simple:5.0.4") { version { strictly "5.0.4" } }
+
+    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:5.4.2+1.20.1")
+    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:5.4.2+1.20.1:api")
+
+    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.4.6')
+    implementation fg.deobf("curse.maven:superb-warfare-1218165:6775652")
+}
+
+
+sourceSets.each {
+    def dir = layout.buildDirectory.dir("sourcesSets/$it.name")
+    it.output.resourcesDir = dir
+    it.java.destinationDirectory = dir
+}
+
+jar {
+    archiveClassifier = "${project.name}-${minecraft_version}"
+}

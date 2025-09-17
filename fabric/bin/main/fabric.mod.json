@@ -1,0 +1,40 @@
+{
+	"schemaVersion": 1,
+	"id": "${mod_id}",
+	"version": "${version}",
+	"name": "${mod_name}",
+	"description": "${description}",
+	"authors": [
+		"${mod_author}"
+	],
+	"contributors": [
+		"${contributors}"
+	],
+	"contact": {
+		"homepage": "${link_home}",
+		"sources": "${link_src}",
+		"issues": "${link_issues}"
+	},
+	"license": "${license}",
+	"icon": "icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"client": [
+			"nx.pingwheel.fabric.FabricClient"
+		],
+		"main": [
+			"nx.pingwheel.fabric.FabricMain"
+		],
+		"modmenu": [
+			"nx.pingwheel.fabric.integration.ModMenuIntegration"
+		]
+	},
+	"mixins": [
+		"ping-wheel.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=${fabric_loader_version}",
+		"fabric-api": "*",
+		"minecraft": "${fabric_compatible_range}"
+	}
+}

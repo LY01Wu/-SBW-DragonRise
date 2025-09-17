@@ -1,0 +1,232 @@
+{
+	"ping": {
+		"subtitle": "ping-wheel.subtitles.ping",
+		"sounds": [
+			"ping-wheel:ping"
+		]
+	},
+	"cnnormal": {
+		"subtitle": "ping-wheel.subtitles.cnnormal",
+		"sounds": [
+			"ping-wheel:cn/normal/cnnormal",
+			"ping-wheel:cn/normal/cnnormal2",
+			"ping-wheel:cn/normal/cnnormal3"
+		]
+	},
+	"cnapc": {
+		"subtitle": "ping-wheel.subtitles.cnapc",
+		"sounds": [
+			"ping-wheel:cn/apc/cnapc"
+		]
+	},
+	"cnsam": {
+		"subtitle": "ping-wheel.subtitles.cnsam",
+		"sounds": [
+			"ping-wheel:cn/sam/cnsam"
+		]
+	},
+	"cnvehicle": {
+		"subtitle": "ping-wheel.subtitles.cnvehicle",
+		"sounds": [
+			"ping-wheel:cn/vehicle/cnvehicle",
+			"ping-wheel:cn/vehicle/cnvehicle2",
+			"ping-wheel:cn/vehicle/cnvehicle3"
+		]
+	},
+	"cntank": {
+		"subtitle": "ping-wheel.subtitles.cntank",
+		"sounds": [
+			"ping-wheel:cn/tank/cntank"
+		]
+	},
+	"cnjet": {
+		"subtitle": "ping-wheel.subtitles.cnjet",
+		"sounds": [
+			"ping-wheel:cn/jet/cnjet",
+			"ping-wheel:cn/jet/cnjet2",
+			"ping-wheel:cn/jet/cnjet3"
+		]
+	},
+	"cnheli": {
+		"subtitle": "ping-wheel.subtitles.cnheli",
+		"sounds": [
+			"ping-wheel:cn/heli/cnheli",
+			"ping-wheel:cn/heli/cnheli2",
+			"ping-wheel:cn/heli/cnheli3"
+		]
+	},
+	"cnenemy": {
+		"subtitle": "ping-wheel.subtitles.cnenemy",
+		"sounds": [
+			"ping-wheel:cn/enemy/cnenemy"
+		]
+	},
+	"cnradionormal": {
+		"subtitle": "ping-wheel.subtitles.cnradionormal",
+		"sounds": [
+			"ping-wheel:cn/normal/cnradionormal1",
+			"ping-wheel:cn/normal/cnradionormal2",
+			"ping-wheel:cn/normal/cnradionormal3"
+		]
+	},
+	"cnradioapc": {
+		"subtitle": "ping-wheel.subtitles.cnradioapc",
+		"sounds": [
+			"ping-wheel:cn/apc/cnradioapc"
+		]
+	},
+	"cnradiosam": {
+		"subtitle": "ping-wheel.subtitles.cnradiosam",
+		"sounds": [
+			"ping-wheel:cn/sam/cnradiosam"
+		]
+	},
+	"cnradiovehicle": {
+		"subtitle": "ping-wheel.subtitles.cnradiovehicle",
+		"sounds": [
+			"ping-wheel:cn/vehicle/cnradiovehicle1",
+			"ping-wheel:cn/vehicle/cnradiovehicle2",
+			"ping-wheel:cn/vehicle/cnradiovehicle3"
+		]
+	},
+	"cnradiotank": {
+		"subtitle": "ping-wheel.subtitles.cnradiotank",
+		"sounds": [
+			"ping-wheel:cn/tank/cnradiotank"
+		]
+	},
+	"cnradiojet": {
+		"subtitle": "ping-wheel.subtitles.cnradiojet",
+		"sounds": [
+			"ping-wheel:cn/jet/cnradiojet1",
+			"ping-wheel:cn/jet/cnradiojet2",
+			"ping-wheel:cn/jet/cnradiojet3"
+		]
+	},
+	"cnradioheli": {
+		"subtitle": "ping-wheel.subtitles.cnradioheli",
+		"sounds": [
+			"ping-wheel:cn/heli/cnradioheli1",
+			"ping-wheel:cn/heli/cnradioheli2",
+			"ping-wheel:cn/heli/cnradioheli3"
+		]
+	},
+	"cnradioenemy": {
+		"subtitle": "ping-wheel.subtitles.cnradioenemy",
+		"sounds": [
+			"ping-wheel:cn/enemy/cnradioenemy"
+		]
+	},
+	"usnormal": {
+		"subtitle": "ping-wheel.subtitles.usnormal",
+		"sounds": [
+			"ping-wheel:us/normal/usnormal1",
+			"ping-wheel:us/normal/usnormal2",
+			"ping-wheel:us/normal/usnormal3"
+		]
+	},
+	"usapc": {
+		"subtitle": "ping-wheel.subtitles.usapc",
+		"sounds": [
+			"ping-wheel:us/apc/usapc"
+		]
+	},
+	"ussam": {
+		"subtitle": "ping-wheel.subtitles.ussam",
+		"sounds": [
+			"ping-wheel:us/sam/ussam"
+		]
+	},
+	"usvehicle": {
+		"subtitle": "ping-wheel.subtitles.usvehicle",
+		"sounds": [
+			"ping-wheel:us/vehicle/usvehicle1",
+			"ping-wheel:us/vehicle/usvehicle2",
+			"ping-wheel:us/vehicle/usvehicle3"
+		]
+	},
+	"ustank": {
+		"subtitle": "ping-wheel.subtitles.ustank",
+		"sounds": [
+			"ping-wheel:us/tank/ustank"
+		]
+	},
+	"usjet": {
+		"subtitle": "ping-wheel.subtitles.usjet",
+		"sounds": [
+			"ping-wheel:us/jet/usjet1",
+			"ping-wheel:us/jet/usjet2",
+			"ping-wheel:us/jet/usjet3"
+		]
+	},
+	"usheli": {
+		"subtitle": "ping-wheel.subtitles.usheli",
+		"sounds": [
+			"ping-wheel:us/heli/usheli1",
+			"ping-wheel:us/heli/usheli2",
+			"ping-wheel:us/heli/usheli3"
+		]
+	},
+	"usenemy": {
+		"subtitle": "ping-wheel.subtitles.usenemy",
+		"sounds": [
+			"ping-wheel:us/enemy/usenemy"
+		]
+	},
+	"usradionormal": {
+		"subtitle": "ping-wheel.subtitles.usradionormal",
+		"sounds": [
+			"ping-wheel:us/normal/usradionormal1",
+			"ping-wheel:us/normal/usradionormal2",
+			"ping-wheel:us/normal/usradionormal3"
+		]
+	},
+	"usradioapc": {
+		"subtitle": "ping-wheel.subtitles.usradioapc",
+		"sounds": [
+			"ping-wheel:us/apc/usradioapc"
+		]
+	},
+	"usradiosam": {
+		"subtitle": "ping-wheel.subtitles.usradiosam",
+		"sounds": [
+			"ping-wheel:us/sam/usradiosam"
+		]
+	},
+	"usradiovehicle": {
+		"subtitle": "ping-wheel.subtitles.usradiovehicle",
+		"sounds": [
+			"ping-wheel:us/vehicle/usradiovehicle1",
+			"ping-wheel:us/vehicle/usradiovehicle2",
+			"ping-wheel:us/vehicle/usradiovehicle3"
+		]
+	},
+	"usradiotank": {
+		"subtitle": "ping-wheel.subtitles.usradiotank",
+		"sounds": [
+			"ping-wheel:us/tank/usradiotank"
+		]
+	},
+	"usradiojet": {
+		"subtitle": "ping-wheel.subtitles.usradiojet",
+		"sounds": [
+			"ping-wheel:us/jet/usradiojet1",
+			"ping-wheel:us/jet/usradiojet2",
+			"ping-wheel:us/jet/usradiojet3"
+		]
+	},
+	"usradioheli": {
+		"subtitle": "ping-wheel.subtitles.usradioheli",
+		"sounds": [
+			"ping-wheel:us/heli/usradioheli1",
+			"ping-wheel:us/heli/usradioheli2",
+			"ping-wheel:us/heli/usradioheli3"
+		]
+	},
+	"usradioenemy": {
+		"subtitle": "ping-wheel.subtitles.usradioenemy",
+		"sounds": [
+			"ping-wheel:us/enemy/usradioenemy"
+		]
+	}
+}
