@@ -1,0 +1,21 @@
+{
+  "item_group.dragonrise.title": "巨龙崛起",
+
+  "entity.dragonrise.ztz99a": "ZTZ-99A 主战坦克",
+
+  "superbwarfare.entry.vehicle.ztz99a": "ZTZ-99A 主战坦克",
+  "superbwarfare.page.vehicle.ztz99a1": "$(thing)ZTZ-99A$()是一款主战坦克，可搭载3人，拥有强大的装甲防护但不具备浮渡能力。$(p)战车配备了能够干扰制导锁定的烟雾发生器，每隔一段时间能自动补充烟雾弹。",
+  "superbwarfare.page.vehicle.ztz99a2": "需要至少 7 x 7 x 4 的空间放置。",
+  "superbwarfare.page.vehicle.ztz99a3": "$(l)基础属性：$()$(p)耐久值 - 500$(br)最大乘员数 - 3$(br)爬坡高度 - 2.25m$(br)最大能量 - 20,000,000FE$(br)能耗 - 128FE/tick$(br)封闭载具（1/2号位）",
+  "superbwarfare.page.vehicle.ztz99a4": "$(l)武器属性：$()$(br)1号位：$(br)(1) 大口径电磁炮$(br)射速 - 15RPM$(br)直击伤害 - 500$(br)爆炸伤害 - 100$(br)爆炸半径 - 4m$(br)弹药 - $(item)穿甲弹$()$(br)(2) 大口径电磁炮$(br)射速 - 15RPM$(br)直击伤害 - 150$(br)爆炸伤害 - 150$(br)爆炸半径 - 10m$(br)弹药 - $(item)高爆弹$()$(br)(3) 12.7mm重机枪$(br)射速 - 500RPM$(br)伤害 - 25$(br)弹药 - $(item)重型弹药$()",
+  "superbwarfare.page.vehicle.ztz99a5": "2号位：$(p)(1) 12.7mm重机枪$(br)射速 - 500RPM$(br)伤害 - 25$(br)弹药 - $(item)重型弹药$()",
+
+  "entity.dragonrise.zhi10me": "Z10-ME 武装直升机",
+
+  "superbwarfare.entry.vehicle.zhi10me": "Z10-ME 武装直升机",
+  "superbwarfare.page.vehicle.zhi10mea1": "",
+  "superbwarfare.page.vehicle.zhi10mea2": "",
+  "superbwarfare.page.vehicle.zhi10mea3": "",
+  "superbwarfare.page.vehicle.zhi10mea4": "",
+  "superbwarfare.page.vehicle.zhi10mea5": ""
+}

@@ -1,0 +1,26 @@
+{
+  "ztz99a_reload": {
+    "sounds": [
+      {
+        "name": "dragonrise:ztz99a/ztz99a_reload",
+        "stream": false
+      }
+    ]
+  },
+  "ztz99a_fire_1p": {
+    "sounds": [
+      {
+        "name": "dragonrise:ztz99a/ztz99a_fire_1p",
+        "stream": false
+      }
+    ]
+  },
+  "ztz99a_fire_3p": {
+    "sounds": [
+      {
+        "name": "dragonrise:ztz99a/ztz99a_fire_3p",
+        "stream": false
+      }
+    ]
+  }
+}
