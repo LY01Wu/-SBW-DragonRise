@@ -1,7 +1,11 @@
 package com.modernwarfare.globalstorm.index.entity;
 
 import com.modernwarfare.globalstorm.init.ModEntities;
+import com.modernwarfare.globalstorm.resource.JsonAssetsManager;
+import com.modernwarfare.globalstorm.resource.ammobox.AmmoBoxData;
 import com.tacz.guns.api.TimelessAPI;
+import com.tacz.guns.api.item.IAmmo;
+import com.tacz.guns.api.item.IAmmoBox;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.builder.AmmoItemBuilder;
 import net.minecraft.nbt.CompoundTag;
@@ -25,6 +29,7 @@ import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -72,23 +77,53 @@ public class AmmoBoxEntity extends Entity implements OwnableEntity, Attackable {
     @Override
     public @NotNull InteractionResult interact(Player pPlayer, @NotNull InteractionHand pHand) {
         if (!this.level().isClientSide) {
-            pPlayer.getCapability(ForgeCapabilities.ITEM_HANDLER,null).map(itemHandler -> {
+            pPlayer.getCapability(ForgeCapabilities.ITEM_HANDLER, null).map(itemHandler -> {
 
                 // 播放声音
                 this.level().playSound(null, this.blockPosition(), SoundEvents.NOTE_BLOCK_PLING.get(),
                         SoundSource.NEUTRAL, 1.0F, 1.0F);
 
+                List<AmmoBoxData> ammoBoxData = new ArrayList<>();
+
+                JsonAssetsManager.getINSTANCE().getAmmoBoxData().getAllData().forEach((key, value) -> {
+                    ammoBoxData.addAll(value);
+                });
                 for (int i = 0; i < itemHandler.getSlots(); i++) {
                     ItemStack stackInSlot = itemHandler.getStackInSlot(i);
                     if (stackInSlot.getItem() instanceof IGun iGun) {
-                        ResourceLocation gunId =  iGun.getGunId(stackInSlot);
+                        ResourceLocation gunId = iGun.getGunId(stackInSlot);
+                        int currentAmmo = pPlayer.getCapability(ForgeCapabilities.ITEM_HANDLER, null).map(cap -> {
+                            // 背包检查
+                            int tmp = 0;
+                            for (int j = 0; j < cap.getSlots(); j++) {
+                                ItemStack checkAmmoStack = cap.getStackInSlot(j);
+                                if (checkAmmoStack.getItem() instanceof IAmmo iAmmo && iAmmo.isAmmoOfGun(stackInSlot, checkAmmoStack)) {
+                                    pPlayer.sendSystemMessage(Component.literal(String.valueOf(checkAmmoStack.getCount())));
+                                    tmp += checkAmmoStack.getCount();
+                                }
+                                if (checkAmmoStack.getItem() instanceof IAmmoBox iAmmoBox && iAmmoBox.isAmmoBoxOfGun(stackInSlot, checkAmmoStack)) {
+                                    tmp += iAmmoBox.getAmmoCount(checkAmmoStack);
+                                }
+                            }
+                            return tmp;
+                        }).orElse(0);
 
-                        TimelessAPI.getCommonGunIndex(gunId).ifPresent(index -> {
-                            ResourceLocation ammoId = index.getGunData().getAmmoId();
-                            ItemStack ammoItem = AmmoItemBuilder.create().setId(ammoId).setCount(1).build();
-                            ItemHandlerHelper.giveItemToPlayer(pPlayer, ammoItem);
-                            pPlayer.sendSystemMessage(Component.literal(gunId +ammoId.toString()));
+                        //pPlayer.sendSystemMessage(Component.literal(value.toString()));
+                        ammoBoxData.forEach(data -> {
+                            pPlayer.sendSystemMessage(Component.literal(data.getId()+gunId.toString()));
+                            if (data.getId().equals(gunId)) {
+                                TimelessAPI.getCommonGunIndex(gunId).ifPresent(index -> {
+                                    ResourceLocation ammoId = index.getGunData().getAmmoId();
+                                    int count = data.getCount()-currentAmmo;
+                                    if(count>0){
+                                        ItemStack ammoItem = AmmoItemBuilder.create().setId(ammoId).setCount(count).build();
+                                        ItemHandlerHelper.giveItemToPlayer(pPlayer, ammoItem);
+                                    }
+                                    pPlayer.sendSystemMessage(Component.literal(gunId + ammoId.toString()));
+                                });
+                            }
                         });
+
 
                     }
                 }
@@ -153,7 +188,7 @@ public class AmmoBoxEntity extends Entity implements OwnableEntity, Attackable {
 //                    }
 //                }
 
-                for(int l = 0; l < list.size(); ++l) {
+                for (int l = 0; l < list.size(); ++l) {
                     Entity entity = list.get(l);
                     this.push(entity);
                 }
@@ -162,7 +197,7 @@ public class AmmoBoxEntity extends Entity implements OwnableEntity, Attackable {
         }
     }
 
-    public boolean isPickable()  {
+    public boolean isPickable() {
         return !this.isRemoved();
     }
 

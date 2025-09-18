@@ -18,7 +18,7 @@ import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
 
 public class ModCommands {
 
-    private static final Path root = FMLPaths.GAMEDIR.get().resolve("CPoints");
+    //private static final Path root = FMLPaths.GAMEDIR.get().resolve("modern_warfare");
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("MW").executes((context) -> {

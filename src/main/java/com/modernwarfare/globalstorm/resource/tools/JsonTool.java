@@ -48,7 +48,7 @@ public class JsonTool {
             return null;
         }
 
-        logger.log(Level.INFO, "Reading rules from " + fileName);
+        logger.log(Level.INFO, "Reading from " + fileName);
         InputStream inputstream = null;
         try {
             inputstream = new FileInputStream(file);
