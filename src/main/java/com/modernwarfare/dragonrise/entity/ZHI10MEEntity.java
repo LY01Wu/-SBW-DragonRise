@@ -21,6 +21,7 @@ import com.atsuishio.superbwarfare.init.ModTags.EntityTypes;
 import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import com.atsuishio.superbwarfare.tools.OBB.Part;
+import com.modernwarfare.dragonrise.config.Z10OBBconfig;
 import com.modernwarfare.dragonrise.config.server.DragonRiseServerConfig;
 import com.modernwarfare.dragonrise.init.ModEntities;
 import com.mojang.math.Axis;
@@ -58,6 +59,7 @@ import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
@@ -83,6 +85,10 @@ public class ZHI10MEEntity extends ContainerMobileVehicleEntity implements GeoEn
     public OBB obb5;
     public OBB obb6;
     public OBB obb7;
+    public OBB obb8;
+    public OBB obb9;
+
+    private static final Z10OBBconfig OBB_CONFIG = Z10OBBconfig.HANDLER.getConfig();
 
     public ZHI10MEEntity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.ZHI10ME.get(), world);
@@ -91,13 +97,30 @@ public class ZHI10MEEntity extends ContainerMobileVehicleEntity implements GeoEn
     public ZHI10MEEntity(EntityType<ZHI10MEEntity> type, Level world) {
         super(type, world);
         this.cache = GeckoLibUtil.createInstanceCache(this);
-        this.obb = new OBB(this.position().toVector3f(), new Vector3f(1.0625F, 1.18125F, 1.625F), new Quaternionf(), Part.BODY);
-        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(0.875F, 0.6875F, 0.59375F), new Quaternionf(), Part.BODY);
-        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(0.25F, 0.3125F, 2.25F), new Quaternionf(), Part.BODY);
-        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(0.0625F, 1.15625F, 0.40625F), new Quaternionf(), Part.BODY);
-        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(1.0F, 0.25F, 0.21875F), new Quaternionf(), Part.BODY);
-        this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(0.3125F, 0.40625F, 0.84375F), new Quaternionf(), Part.ENGINE1);
-        this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(0.3125F, 0.40625F, 0.40625F), new Quaternionf(), Part.ENGINE2);
+         this.obb = new OBB(this.position().toVector3f(), new Vector3f(getV3FromOBB(OBB_CONFIG.getObb1())), new Quaternionf(), Part.BODY);
+        this.obb2 = new OBB(this.position().toVector3f(), new Vector3f(getV3FromOBB(OBB_CONFIG.getObb2())), new Quaternionf(), Part.BODY);
+        this.obb3 = new OBB(this.position().toVector3f(), new Vector3f(getV3FromOBB(OBB_CONFIG.getObb3())), new Quaternionf(), Part.BODY);
+        this.obb4 = new OBB(this.position().toVector3f(), new Vector3f(getV3FromOBB(OBB_CONFIG.getObb4())), new Quaternionf(), Part.BODY);
+        this.obb5 = new OBB(this.position().toVector3f(), new Vector3f(getV3FromOBB(OBB_CONFIG.getObb5())), new Quaternionf(), Part.ENGINE1);
+        this.obb6 = new OBB(this.position().toVector3f(), new Vector3f(getV3FromOBB(OBB_CONFIG.getObb6())), new Quaternionf(), Part.ENGINE2);
+        this.obb7 = new OBB(this.position().toVector3f(), new Vector3f(getV3FromOBB(OBB_CONFIG.getObb7())), new Quaternionf(), Part.BODY);
+        this.obb8 = new OBB(this.position().toVector3f(), new Vector3f(getV3FromOBB(OBB_CONFIG.getObb8())), new Quaternionf(), Part.BODY);
+        this.obb9 = new OBB(this.position().toVector3f(), new Vector3f(getV3FromOBB(OBB_CONFIG.getObb9())), new Quaternionf(), Part.BODY);
+    }
+
+    private Vector3f getV3FromOBB(Map<String, Map<String,Float>> OBB){
+         return new Vector3f(
+                 OBB.get("Vector3f").get("x")/32,
+                 OBB.get("Vector3f").get("y")/32,
+                 OBB.get("Vector3f").get("z")/32
+         );
+    }
+    private Vector3f getTFFromOBB(Map<String, Map<String,Float>> OBB){
+        return new Vector3f(
+                OBB.get("transform").get("x")/16+getV3FromOBB(OBB).x,
+                OBB.get("transform").get("y")/16+getV3FromOBB(OBB).y,
+                OBB.get("transform").get("z")/16+getV3FromOBB(OBB).z
+        );
     }
 
     public VehicleWeapon[][] initWeapons() {
@@ -782,32 +805,44 @@ public class ZHI10MEEntity extends ContainerMobileVehicleEntity implements GeoEn
     }
 
     public List<OBB> getOBBs() {
-        return List.of(this.obb, this.obb2, this.obb3, this.obb4, this.obb5, this.obb6, this.obb7);
+        return List.of(this.obb, this.obb2, this.obb3, this.obb4, this.obb5, this.obb6, this.obb7,this.obb8,this.obb9);
+    }
+
+    private Vector4f transformPosition(Matrix4f transform,Vector3f vector3f) {
+        return this.transformPosition(transform, vector3f.x(), vector3f.y(), vector3f.z());
     }
 
     public void updateOBB() {
         Matrix4f transform = this.getVehicleTransform(1.0F);
-        Vector4f worldPosition = this.transformPosition(transform, 0.0F, 0.41874993F, -0.15625F);
+        transform.rotate(Axis.YP.rotationDegrees(180F));
+        transform.translate(0,-1.5F,-2F);
+        Vector4f worldPosition = this.transformPosition(transform, getTFFromOBB(OBB_CONFIG.getObb1()));
         this.obb.center().set(new Vector3f(worldPosition.x, worldPosition.y, worldPosition.z));
         this.obb.setRotation(VectorTool.combineRotations(1.0F, this));
-        Vector4f worldPosition2 = this.transformPosition(transform, 0.0F, 0.049999952F, 1.90625F);
+        Vector4f worldPosition2 = this.transformPosition(transform, getTFFromOBB(OBB_CONFIG.getObb2()));
         this.obb2.center().set(new Vector3f(worldPosition2.x, worldPosition2.y, worldPosition2.z));
         this.obb2.setRotation(VectorTool.combineRotations(1.0F, this));
-        Vector4f worldPosition3 = this.transformPosition(transform, 0.0F, 0.86249995F, -4.1875F);
+        Vector4f worldPosition3 = this.transformPosition(transform, getTFFromOBB(OBB_CONFIG.getObb3()));
         this.obb3.center().set(new Vector3f(worldPosition3.x, worldPosition3.y, worldPosition3.z));
         this.obb3.setRotation(VectorTool.combineRotations(1.0F, this));
-        Vector4f worldPosition4 = this.transformPosition(transform, -0.125F, 0.89374995F, -6.34375F);
+        Vector4f worldPosition4 = this.transformPosition(transform, getTFFromOBB(OBB_CONFIG.getObb4()));
         this.obb4.center().set(new Vector3f(worldPosition4.x, worldPosition4.y, worldPosition4.z));
         this.obb4.setRotation(VectorTool.combineRotations(1.0F, this));
-        Vector4f worldPosition5 = this.transformPosition(transform, -0.125F, 2.1125F, -6.65625F);
+        Vector4f worldPosition5 = this.transformPosition(transform, getTFFromOBB(OBB_CONFIG.getObb5()));
         this.obb5.center().set(new Vector3f(worldPosition5.x, worldPosition5.y, worldPosition5.z));
         this.obb5.setRotation(VectorTool.combineRotations(1.0F, this));
-        Vector4f worldPosition6 = this.transformPosition(transform, 0.0F, 1.83125F, -0.53125F);
+        Vector4f worldPosition6 = this.transformPosition(transform, getTFFromOBB(OBB_CONFIG.getObb6()));
         this.obb6.center().set(new Vector3f(worldPosition6.x, worldPosition6.y, worldPosition6.z));
         this.obb6.setRotation(VectorTool.combineRotations(1.0F, this));
-        Vector4f worldPosition7 = this.transformPosition(transform, 0.1875F, 0.64374995F, -6.15625F);
+        Vector4f worldPosition7 = this.transformPosition(transform, getTFFromOBB(OBB_CONFIG.getObb7()));
         this.obb7.center().set(new Vector3f(worldPosition7.x, worldPosition7.y, worldPosition7.z));
         this.obb7.setRotation(VectorTool.combineRotations(1.0F, this));
+        Vector4f worldPosition8 = this.transformPosition(transform, getTFFromOBB(OBB_CONFIG.getObb8()));
+        this.obb8.center().set(new Vector3f(worldPosition8.x, worldPosition8.y, worldPosition8.z));
+        this.obb8.setRotation(VectorTool.combineRotations(1.0F, this));
+        Vector4f worldPosition9 = this.transformPosition(transform, getTFFromOBB(OBB_CONFIG.getObb9()));
+        this.obb9.center().set(new Vector3f(worldPosition9.x, worldPosition9.y, worldPosition9.z));
+        this.obb9.setRotation(VectorTool.combineRotations(1.0F, this));
     }
 
     static {
