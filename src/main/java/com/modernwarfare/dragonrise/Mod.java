@@ -1,10 +1,10 @@
 package com.modernwarfare.dragonrise;
 
+import com.modernwarfare.dragonrise.config.Z10OBBconfig;
 import com.modernwarfare.dragonrise.config.ServerConfig;
 import com.modernwarfare.dragonrise.init.DRModSounds;
 import com.modernwarfare.dragonrise.init.ModEntities;
 import com.modernwarfare.dragonrise.init.ModTabs;
-import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -12,14 +12,26 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.slf4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.message.FormattedMessageFactory;
+import org.apache.logging.log4j.message.Message;
 
 @net.minecraftforge.fml.common.Mod(Mod.MODID)
 public class Mod {
     public static final String MODID = "dragonrise";
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final String MOD_PREFIX = "[Dragon-Rise] ";
+    public static final Logger LOGGER = LogManager.getLogger(MODID,
+            new FormattedMessageFactory() {
+                @Override
+                public Message newMessage(String message) {
+                    return super.newMessage(MOD_PREFIX + message);
+                }
+            });
 
     public Mod() {
+        Z10OBBconfig.HANDLER.load();
+
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfig.init());
 
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
