@@ -20,6 +20,9 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 import com.modernwarfare.dragonrise.client.model.ZTZ99AModel;
 import com.modernwarfare.dragonrise.entity.ZTZ99AEntity;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.atsuishio.superbwarfare.entity.vehicle.base.MobileVehicleEntity.YAW;
 
 public class ZTZ99ARenderer extends GeoEntityRenderer<ZTZ99AEntity> {
@@ -212,7 +215,7 @@ public class ZTZ99ARenderer extends GeoEntityRenderer<ZTZ99AEntity> {
 //        }
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
     }
-
+    //Mth.lerp((t-上一节点值)/(当前节点值-上一节点值),上一节点返回值，当前节点返回值);
     public float getBoneRotX(float t) {
         if (t <= 37.6667) return 0F;
         if (t <= 38.5833) return Mth.lerp((t - 37.6667F) / (38.5833F - 37.6667F), 0F, -45F);
