@@ -619,7 +619,7 @@ public class ZHI10MEEntity extends ContainerMobileVehicleEntity implements GeoEn
             }
         }
         if (type == 1) {
-            if (this.cannotFire | this.getEntityData().get(MG_AMMO)==0) return;
+            if (!hasCreativeAmmo && (this.cannotFire | this.getEntityData().get(MG_AMMO) == 0)) return;
             Matrix4f transform = getGunnerBarrelTransform(1);
             Vector4f worldPosition = transformPosition(transform, 0F, -0.15F, 0);
 
