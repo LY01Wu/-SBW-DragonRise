@@ -3,9 +3,13 @@ package com.modernwarfare.dragonrise.block;
 import com.modernwarfare.dragonrise.block.blockEntity.IBlockWithEntity;
 import com.modernwarfare.dragonrise.block.blockEntity.SupplyStationBlockEntity;
 import com.modernwarfare.dragonrise.init.ModBlockEntities;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -41,6 +45,27 @@ public class SupplyStationBlock extends BaseEntityBlock implements IBlockWithEnt
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext pContext) {
         return this.defaultBlockState().setValue(FACING, pContext.getHorizontalDirection().getOpposite());
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
+        if (!pLevel.isClientSide) {
+            return createTickerHelper(pBlockEntityType, ModBlockEntities.SUPPLY_STATION.get(),
+                    (pLevel1, pPos, pState1, blockEntity) -> SupplyStationBlockEntity.serverTick(blockEntity));
+        }
+        return null;
+    }
+    @Override
+    public void onRemove(BlockState pState, Level pLevel, BlockPos pPos, BlockState pNewState, boolean pMovedByPiston) {
+        if (!pState.is(pNewState.getBlock())) {
+            BlockEntity blockentity = pLevel.getBlockEntity(pPos);
+            if (blockentity instanceof SupplyStationBlockEntity) {
+                pLevel.updateNeighbourForOutputSignal(pPos, this);
+            }
+        }
+
+        super.onRemove(pState, pLevel, pPos, pNewState, pMovedByPiston);
     }
 }
 

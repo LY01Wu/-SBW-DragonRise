@@ -1083,7 +1083,7 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
         float scaledMinWH = Mth.floor(minWH * scale);
         float centerW = ((screenWidth - scaledMinWH) / 2);
         float centerH = ((screenHeight - scaledMinWH) / 2);
-        System.out.println(1);
+        //System.out.println(1);
         float coolDown = this.getEntityData().get(RELOAD_COOLDOWN) / 20.0F;
 
         RenderSystem.disableDepthTest();
