@@ -2,9 +2,7 @@ package com.modernwarfare.dragonrise;
 
 import com.modernwarfare.dragonrise.config.Z10OBBconfig;
 import com.modernwarfare.dragonrise.config.ServerConfig;
-import com.modernwarfare.dragonrise.init.DRModSounds;
-import com.modernwarfare.dragonrise.init.ModEntities;
-import com.modernwarfare.dragonrise.init.ModTabs;
+import com.modernwarfare.dragonrise.init.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -37,6 +35,10 @@ public class Mod {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
         DRModSounds.REGISTRY.register(bus);
+
+        ModBlocks.REGISTRY.register(bus);
+
+        ModBlockEntities.REGISTRY.register(bus);
 
         ModEntities.REGISTRY.register(bus);
 
