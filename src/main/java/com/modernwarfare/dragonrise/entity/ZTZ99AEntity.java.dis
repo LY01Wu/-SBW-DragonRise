@@ -1005,8 +1005,33 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
     }
 
     @Override
+    public void vehicleShoot(LivingEntity livingEntity, int i) {
+
+    }
+
+    @Override
+    public int mainGunRpm(LivingEntity livingEntity) {
+        return 0;
+    }
+
+    @Override
+    public boolean canShoot(LivingEntity livingEntity) {
+        return false;
+    }
+
+    @Override
+    public int getAmmoCount(LivingEntity livingEntity) {
+        return 0;
+    }
+
+    @Override
     public int zoomFov() {
         return 3;
+    }
+
+    @Override
+    public int getWeaponHeat(LivingEntity livingEntity) {
+        return 0;
     }
 
     @Override
@@ -1065,6 +1090,11 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
         }
 
         WeaponVehicleEntity.super.changeWeapon(index, value, isScroll);
+    }
+
+    @Override
+    public boolean hasPassengerTurretWeapon() {
+        return false;
     }
 
     public Vec3 getGunVec(float ticks) {
