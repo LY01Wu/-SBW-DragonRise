@@ -29,6 +29,9 @@ public class Mod {
 
     public Mod() {
         Z10OBBconfig.HANDLER.load();
+        for(int i =0;i<5;i++){
+            Z10OBBconfig.HANDLERS[i].load();
+        }
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfig.init());
 
