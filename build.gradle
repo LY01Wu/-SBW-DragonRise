@@ -176,7 +176,7 @@ dependencies {
     compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:5.4.2+1.20.1:api")
 
     implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.4.6')
-    implementation fg.deobf("curse.maven:superb-warfare-1218165:6775652")
+    implementation fg.deobf("curse.maven:superb-warfare-1218165:6982132")
 
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
