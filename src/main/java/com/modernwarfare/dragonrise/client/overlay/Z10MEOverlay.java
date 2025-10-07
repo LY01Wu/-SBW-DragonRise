@@ -208,13 +208,9 @@ public class Z10MEOverlay implements IGuiOverlay {
             float gundiffX = Mth.wrapDegrees(Mth.lerp(ticks, helic.gunXRotO, helic.getGunXRot()) - Mth.lerp(ticks, heli.xRotO, heli.getXRot())) * 0.072f;
 
             RenderHelper.blit(poseStack, Mod.loc("textures/screens/helicopter/heli_driver_angle.png"), k + gundiffY, l + gundiffX, 0, 0.0F, i, j, i, j, 255);
-            System.out.println("GY:"+helic.getGunYRot());
-            System.out.println("GX:"+helic.getGunXRot());
         }
 
         RenderHelper.blit(poseStack, Mod.loc("textures/screens/helicopter/heli_driver_angle.png"), k + diffY, l + diffX, 0, 0.0F, i, j, i, j, color);
-        System.out.println("Y:"+player.getYHeadRot());
-        System.out.println("X:"+player.getXRot());
     }
 
     public static double length(double x, double y, double z) {
