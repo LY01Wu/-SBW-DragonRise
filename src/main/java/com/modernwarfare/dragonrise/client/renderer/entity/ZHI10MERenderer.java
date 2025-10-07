@@ -53,7 +53,7 @@ public class ZHI10MERenderer extends GeoEntityRenderer<ZHI10MEEntity> {
             bone.setRotX(-6.0F * Mth.lerp(partialTick, animatable.propellerRotO, animatable.getPropellerRot()));
         }
         if(name.equals("gun")){
-            bone.setRotY(Mth.lerp(partialTick, animatable.gunYRotO, animatable.getGunYRot()) * Mth.DEG_TO_RAD - Mth.lerp(partialTick, animatable.turretYRotO, animatable.getTurretYRot()) * Mth.DEG_TO_RAD);
+            bone.setRotY(Mth.lerp(partialTick, animatable.gunYRotO, animatable.getGunYRot()) * Mth.DEG_TO_RAD);
         }
         if (name.equals("bone6")) {
             float a = animatable.getTurretYaw(partialTick);
@@ -72,9 +72,7 @@ public class ZHI10MERenderer extends GeoEntityRenderer<ZHI10MEEntity> {
             }
 
             bone.setRotX((float) Mth.clamp(
-                    -Mth.lerp(partialTick, animatable.gunXRotO, animatable.getGunXRot()) * Mth.DEG_TO_RAD
-                            - r * animatable.getXRot() * Mth.DEG_TO_RAD
-                            - r2 * animatable.getYRot() * Mth.DEG_TO_RAD,
+                    -Mth.lerp(partialTick, animatable.gunXRotO, animatable.getGunXRot()) * Mth.DEG_TO_RAD,
                     -80 * Mth.DEG_TO_RAD, 2.5 * Mth.DEG_TO_RAD)
             );
         }
