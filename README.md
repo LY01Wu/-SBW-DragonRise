@@ -1,15 +1,7 @@
 # SuperbWarfare extension mod example
 
-This is an example project of showing how to make an extension mod
-for [SuperbWarfare](https://github.com/Mercurows/SuperbWarfare).
+这是一个有关 [卓越前线](https://github.com/Mercurows/SuperbWarfare)的附属，暂时有ZHI10和99A两个载具
 
-This mod added an example vehicle of [Tom F7F](./src/main/java/com/modernwarfare/dragonrise/entity/Tom7Entity.java), which is
-an enhanced version of the original Tom F6F from SuperbWarfare.
-
-To get started, check out [build.gradle](build.gradle) first, add SuperbWarfare as a dependency mod, then just write
-your own vehicles or other objects like other normal mods do, make them extend vehicle classes from SuperbWarfare.
-
-TODO: make it possible to directly add custom vehicle containers into SuperbWarfare
 
 # License
 
