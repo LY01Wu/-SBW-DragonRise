@@ -1,14 +1,17 @@
 package com.modernwarfare.dragonrise.entity;
 
 import com.atsuishio.superbwarfare.Mod;
+import com.atsuishio.superbwarfare.client.RenderHelper;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
 import com.atsuishio.superbwarfare.config.server.VehicleConfig;
 import com.atsuishio.superbwarfare.entity.OBBEntity;
 import com.atsuishio.superbwarfare.entity.projectile.SmokeDecoyEntity;
+import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.*;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.CannonShellWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.ProjectileWeapon;
+import com.atsuishio.superbwarfare.entity.vehicle.weapon.SwarmDroneWeapon;
 import com.atsuishio.superbwarfare.entity.vehicle.weapon.VehicleWeapon;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
@@ -20,6 +23,7 @@ import com.modernwarfare.dragonrise.config.server.DragonRiseServerConfig;
 import com.modernwarfare.dragonrise.init.DRModSounds;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -40,15 +44,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
@@ -75,7 +78,7 @@ import static com.atsuishio.superbwarfare.client.RenderHelper.blit;
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
 import static com.atsuishio.superbwarfare.tools.ParticleTool.sendParticle;
 
-public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity, OBBEntity {
+public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEntity, LandArmorEntity, WeaponVehicleEntity, OBBEntity,ArmedVehicleEntity {
 
     public static final EntityDataAccessor<Integer> MG_AMMO = SynchedEntityData.defineId(ZTZ99AEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> LOADED_AP = SynchedEntityData.defineId(ZTZ99AEntity.class, EntityDataSerializers.INT);
@@ -92,6 +95,7 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
     public OBB obbEngine;
     public OBB obbTurret;
     public OBB obbTurret2;
+    private Object living;
 
     public ZTZ99AEntity(PlayMessages.SpawnEntity packet, Level world) {
         this(ModEntities.ZTZ99A.get(), world);
@@ -306,8 +310,8 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
             sendParticle(serverLevel, ParticleTypes.BUBBLE_COLUMN_UP, this.getX() + 0.5 * this.getDeltaMovement().x, this.getY() + getSubmergedHeight(this) - 0.2, this.getZ() + 0.5 * this.getDeltaMovement().z, (int) (2 + 10 * this.getDeltaMovement().length()), 0.65, 0, 0.65, 0, true);
         }
 
-        turretAngle(5, 5);
-        gunnerAngle(15, 15);
+//        turretAngle(5,5);
+//        gunnerAngle(15, 15);
         lowHealthWarning();
 
         terrainCompact(4.0f, 5.0f);
@@ -372,34 +376,28 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
     }
 
     @Override
-    public void vehicleShoot(Player player, int type) {
+    public void vehicleShoot(LivingEntity living, int type) {
+        this.living = living;
         boolean hasCreativeAmmo = false;
         for (int i = 0; i < getMaxPassengers() - 1; i++) {
-            if (getNthEntity(i) instanceof Player pPlayer && InventoryTool.hasCreativeAmmoBox(pPlayer)) {
+            if (InventoryTool.hasCreativeAmmoBox(getNthEntity(i))) {
                 hasCreativeAmmo = true;
             }
         }
 
         if (type == 0) {
             if (reloadCoolDown == 0 && (getWeaponIndex(0) == 0 || getWeaponIndex(0) == 1)) {
-//                if (!this.canConsume(VehicleConfig.YX_100_SHOOT_COST.get())) {
-//                    player.displayClientMessage(Component.translatable("tips.superbwarfare.annihilator.energy_not_enough").withStyle(ChatFormatting.RED), true);
-//                    return;
-//                }
-
                 Matrix4f transform = getBarrelTransform(1);
                 Vector4f worldPosition = transformPosition(transform, 0, 0, 0);
 
                 var cannonShell = (CannonShellWeapon) getWeapon(0);
-                var entityToSpawn = cannonShell.create(player);
+                var entityToSpawn = cannonShell.create(living);
 
                 entityToSpawn.setPos(worldPosition.x - 1.1 * this.getDeltaMovement().x, worldPosition.y, worldPosition.z - 1.1 * this.getDeltaMovement().z);
                 entityToSpawn.shoot(getBarrelVector(1).x, getBarrelVector(1).y + 0.005f, getBarrelVector(1).z, cannonShell.velocity, 0.02f);
                 level().addFreshEntity(entityToSpawn);
 
-                if (!player.level().isClientSide) {
-                    playShootSound3p(player, 0, 8, 16, 32);
-                }
+                playShootSound3p(living, 0, 8, 16, 32, new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z));
 
                 this.entityData.set(CANNON_RECOIL_TIME, 40);
 
@@ -409,12 +407,10 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
                     this.entityData.set(LOADED_HE, 0);
                 }
 
-                //this.consumeEnergy(10000);
                 this.entityData.set(YAW, getTurretYRot());
 
                 reloadCoolDown = DragonRiseServerConfig.ZTZ99A_CANNON_COOLDOWN.get();
-
-                this.getEntityData().set(RELOAD_COOLDOWN,reloadCoolDown);
+                this.getEntityData().set(RELOAD_COOLDOWN, reloadCoolDown);
 
                 if (this.level() instanceof ServerLevel server) {
                     server.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
@@ -460,84 +456,39 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
 
                 ShakeClientMessage.sendToNearbyPlayers(this, 8, 10, 8, 60);
             } else if (getWeaponIndex(0) == 2) {
-                if (this.cannotFireCoax) return;
+                if (!this.cannotFireCoax) {
+                    Matrix4f transform = getBarrelTransform(1);
+                    Vector4f worldPosition = transformPosition(transform, -0.4f, 0.15f, 2f);
+                    if (this.entityData.get(MG_AMMO) > 0 || hasCreativeAmmo) {
+                        var projectileRight = ((ProjectileWeapon) getWeapon(0)).create(living).setGunItemId(this.getType().getDescriptionId() + ".1");
 
-                Matrix4f transform = getBarrelTransform(1);
-                Vector4f worldPosition = transformPosition(transform, -0.4f, 0.15f, 2f);
+                        projectileRight.setPos(worldPosition.x - 1.1 * this.getDeltaMovement().x, worldPosition.y, worldPosition.z - 1.1 * this.getDeltaMovement().z);
+                        projectileRight.shoot(living, getBarrelVector(1).x, getBarrelVector(1).y + 0.005f, getBarrelVector(1).z, 36, 0.25f);
+                        this.level().addFreshEntity(projectileRight);
 
-                if (this.entityData.get(MG_AMMO) > 0 || hasCreativeAmmo) {
-                    var projectileRight = ((ProjectileWeapon) getWeapon(0)).create(player).setGunItemId(this.getType().getDescriptionId() + ".1");
+                        if (!hasCreativeAmmo) {
+                            ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
+                                if (stack.is(ModItems.AMMO_BOX.get())) {
+                                    return Ammo.HEAVY.get(stack) > 0;
+                                }
+                                return false;
+                            }).findFirst().orElse(ItemStack.EMPTY);
 
-                    projectileRight.setPos(worldPosition.x - 1.1 * this.getDeltaMovement().x, worldPosition.y, worldPosition.z - 1.1 * this.getDeltaMovement().z);
-                    projectileRight.shoot(player, getBarrelVector(1).x, getBarrelVector(1).y + 0.005f, getBarrelVector(1).z, 36,
-                            0.25f);
-                    this.level().addFreshEntity(projectileRight);
-
-                    if (!hasCreativeAmmo) {
-                        ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
-                            if (stack.is(ModItems.AMMO_BOX.get())) {
-                                return Ammo.HEAVY.get(stack) > 0;
+                            if (!ammoBox.isEmpty()) {
+                                Ammo.HEAVY.add(ammoBox, -1);
+                            } else {
+                                this.getItemStacks().stream().filter(stack -> stack.is(ModItems.HEAVY_AMMO.get())).findFirst().ifPresent(stack -> stack.shrink(1));
                             }
-                            return false;
-                        }).findFirst().orElse(ItemStack.EMPTY);
-
-                        if (!ammoBox.isEmpty()) {
-                            Ammo.HEAVY.add(ammoBox, -1);
-                        } else {
-                            this.getItemStacks().stream().filter(stack -> stack.is(ModItems.HEAVY_AMMO.get())).findFirst().ifPresent(stack -> stack.shrink(1));
                         }
                     }
+                    this.entityData.set(COAX_HEAT, this.entityData.get(COAX_HEAT) + 4);
+                    this.entityData.set(FIRE_ANIM, 2);
+                    playShootSound3p(living, 0, 4, 12, 24, new Vec3(getTurretShootPos(living, 1).x, getTurretShootPos(living, 1).y, getTurretShootPos(living, 1).z));
                 }
 
-                this.entityData.set(COAX_HEAT, this.entityData.get(COAX_HEAT) + 4);
-                this.entityData.set(FIRE_ANIM, 2);
-
-                if (!player.level().isClientSide) {
-                    playShootSound3p(player, 0, 4, 12, 24);
-                }
             }
         }
-
-        if (type == 1) {
-            if (this.cannotFire) return;
-            Matrix4f transform = getGunTransform(1);
-            Vector4f worldPosition = transformPosition(transform, 0, -0.25f, 0);
-
-            var projectile = (ProjectileWeapon) getWeapon(1);
-            var projectileEntity = projectile.create(player).setGunItemId(this.getType().getDescriptionId() + ".2");
-
-            projectileEntity.setPos(worldPosition.x - 1.1 * this.getDeltaMovement().x, worldPosition.y, worldPosition.z - 1.1 * this.getDeltaMovement().z);
-            projectileEntity.shoot(getGunnerVector(1).x, getGunnerVector(1).y + 0.01f, getGunnerVector(1).z, 20, 0.3f);
-
-            this.level().addFreshEntity(projectileEntity);
-
-            if (!player.level().isClientSide) {
-                playShootSound3p(player, 1, 4, 12, 24);
-            }
-
-            this.entityData.set(GUN_FIRE_TIME, 2);
-            this.entityData.set(HEAT, this.entityData.get(HEAT) + 4);
-
-            ShakeClientMessage.sendToNearbyPlayers(this, 4, 6, 4, 6);
-
-            if (hasCreativeAmmo) return;
-
-            ItemStack ammoBox = this.getItemStacks().stream().filter(stack -> {
-                if (stack.is(ModItems.AMMO_BOX.get())) {
-                    return Ammo.HEAVY.get(stack) > 0;
-                }
-                return false;
-            }).findFirst().orElse(ItemStack.EMPTY);
-
-            if (!ammoBox.isEmpty()) {
-                Ammo.HEAVY.add(ammoBox, -1);
-            } else {
-                consumeItem(getWeapon(1).ammo, 1);
-            }
-        }
-
     }
-
 
     @Override
     public void travel() {
@@ -794,7 +745,7 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
         if (level() instanceof ServerLevel) {
             CustomExplosion explosion = new CustomExplosion(this.level(), this,
                     ModDamageTypes.causeCustomExplosionDamage(this.level().registryAccess(), getAttacker(), getAttacker()), 200f,
-                    this.getX(), this.getY(), this.getZ(), 16f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP, true).setDamageMultiplier(1);
+                    this.getX(), this.getY(), this.getZ(), 16f, ExplosionConfig.EXPLOSION_DESTROY.get() ? Explosion.BlockInteraction.DESTROY : Explosion.BlockInteraction.KEEP).setDamageMultiplier(1);
             explosion.explode();
             ForgeEventFactory.onExplosionStart(this.level(), explosion);
             explosion.finalizeExplosion(false);
@@ -935,8 +886,8 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
     }
 
     @Override
-    public int mainGunRpm(Player player) {
-        if (player == getNthEntity(0)) {
+    public int mainGunRpm(LivingEntity living) {
+        if (living == getNthEntity(0)) {
             if (getWeaponIndex(0) == 0 || getWeaponIndex(0) == 1) {
                 return 10;
             } else if (getWeaponIndex(0) == 2) {
@@ -944,38 +895,34 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
             }
         }
 
-        if (player == getNthEntity(1)) {
+        if (living == getNthEntity(1)) {
             return 500;
         }
-
-//        if (player == getNthEntity(2)) {
-//            return 600;
-//        }
 
         return 10;
     }
 
     @Override
-    public boolean canShoot(Player player) {
-        if (player == getNthEntity(0)) {
+    public boolean canShoot(LivingEntity living) {
+        if (living == getNthEntity(0)) {
             if (getWeaponIndex(0) == 0) {
                 return this.entityData.get(LOADED_AP) > 0;
             } else if (getWeaponIndex(0) == 1) {
                 return this.entityData.get(LOADED_HE) > 0;
             } else if (getWeaponIndex(0) == 2) {
-                return (this.entityData.get(MG_AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(player)) && !cannotFireCoax;
+                return (this.entityData.get(MG_AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(living)) && !cannotFireCoax;
             }
         }
 
-        if (player == getNthEntity(1)) {
-            return (this.entityData.get(MG_AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(player)) && !cannotFire;
+        if (living == getNthEntity(1)) {
+            return (this.entityData.get(MG_AMMO) > 0 || InventoryTool.hasCreativeAmmoBox(living)) && !cannotFire;
         }
         return false;
     }
 
     @Override
-    public int getAmmoCount(Player player) {
-        if (player == getNthEntity(0)) {
+    public int getAmmoCount(LivingEntity living) {
+        if (living == getNthEntity(0)) {
             if (getWeaponIndex(0) == 0) {
                 return this.entityData.get(LOADED_AP);
             } else if (getWeaponIndex(0) == 1) {
@@ -985,67 +932,67 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
             }
         }
 
-        if (player == getNthEntity(1)) {
+        if (living == getNthEntity(1)) {
             return this.entityData.get(MG_AMMO);
         }
         return 0;
     }
 
     @Override
-    public boolean banHand(Player player) {
-        if (player == getNthEntity(0) || player == getNthEntity(1)) {
-            return true;
-        }
-        return player == getNthEntity(2) && !player.isShiftKeyDown();
+    public int zoomFov() {
+        return 0;
     }
+
+//    @Override
+//    public boolean banHand(Player player) {
+//        if (player == getNthEntity(0) || player == getNthEntity(1)) {
+//            return true;
+//        }
+//        return player == getNthEntity(2) && !player.isShiftKeyDown();
+//    }
 
     @Override
     public boolean hidePassenger(Entity entity) {
         return entity == getNthEntity(0) || entity == getNthEntity(1) || entity == getNthEntity(2);
     }
 
-    @Override
-    public void vehicleShoot(LivingEntity livingEntity, int i) {
+//    @Override
+//    public int mainGunRpm(LivingEntity livingEntity) {
+//        return 0;
+//    }
+//
+//    @Override
+//    public boolean canShoot(LivingEntity livingEntity) {
+//        return false;
+//    }
 
-    }
+//    @Override
+//    public int getAmmoCount(LivingEntity livingEntity) {
+//        return 0;
+//    }
+//
+//    @Override
+//    public int zoomFov() {
+//        return 3;
+//    }
 
-    @Override
-    public int mainGunRpm(LivingEntity livingEntity) {
-        return 0;
-    }
-
-    @Override
-    public boolean canShoot(LivingEntity livingEntity) {
-        return false;
-    }
-
-    @Override
-    public int getAmmoCount(LivingEntity livingEntity) {
-        return 0;
-    }
-
-    @Override
-    public int zoomFov() {
-        return 3;
-    }
-
-    @Override
-    public int getWeaponHeat(LivingEntity livingEntity) {
-        return 0;
-    }
-
-    @Override
-    public boolean hasTracks() {
-        return true;
-    }
+//    @Override
+////    public int getWeaponHeat(LivingEntity livingEntity) {
+////        return 0;
+////    }
+//
+//    @Override
+//    public boolean hasTracks() {
+//        return true;
+//    }
 
     @Override
-    public int getWeaponHeat(Player player) {
-        if (player == getNthEntity(0)) {
+    public int getWeaponHeat(LivingEntity living) {
+        if (living == getNthEntity(0)) {
             return entityData.get(COAX_HEAT);
         }
 
-        if (player == getNthEntity(1)) {
+        if (living == getNthEntity(1)) {
             return entityData.get(HEAT);
         }
 
@@ -1108,13 +1055,11 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
 
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void renderFirstPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
+    public void renderFirstPersonOverlay(GuiGraphics guiGraphics, PoseStack poseStack, Font font, Player player, int screenWidth, int screenHeight, float scale, int color) {
         float minWH = (float) Math.min(screenWidth, screenHeight);
         float scaledMinWH = Mth.floor(minWH * scale);
         float centerW = ((screenWidth - scaledMinWH) / 2);
         float centerH = ((screenHeight - scaledMinWH) / 2);
-        //System.out.println(1);
-        float coolDown = this.getEntityData().get(RELOAD_COOLDOWN) / 20.0F;
 
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
@@ -1124,40 +1069,25 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
         // 准心
-        if (this.getWeaponIndex(0) == 0) {
-            //blit(guiGraphics.pose(),Mod.loc("textures/screens/land/tank_cannon_cross_ap.png"),centerW,centerH,0,0.0F,scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, Mth.hsvToRgb( (1-coolDown / 6F)/ 6F, 1.0F, 1.0F));
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/land/tank_cannon_cross_ap.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
-        } else if (this.getWeaponIndex(0) == 1) {
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/land/tank_cannon_cross_he.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
-        } else if (this.getWeaponIndex(0) == 2) {
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_gun_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
-        } else if (this.getWeaponIndex(0) == 3) {
-            preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_missile_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
+        if (this.getWeapon(0).mainGun) {
+            RenderHelper.blit(poseStack, Mod.loc("textures/screens/land/tank_cannon_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+        } else  {
+            RenderHelper.blit(poseStack, Mod.loc("textures/screens/land/lav_gun_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
         }
-
 
         // 武器名称
         if (this.getWeaponIndex(0) == 0) {
-            guiGraphics.drawString(font, Component.literal("AP SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, 0x66FF00, false);
+            guiGraphics.drawString(font, Component.literal("AP SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
         } else if (this.getWeaponIndex(0) == 1) {
-            guiGraphics.drawString(font, Component.literal("HE SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, 0x66FF00, false);
-        } else if (this.getWeaponIndex(0) == 2) {
-            double heat = 1 - this.getEntityData().get(COAX_HEAT) / 100.0F;
-            guiGraphics.drawString(font, Component.literal(" 12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, Mth.hsvToRgb((float) heat / 3.745318352059925F, 1.0F, 1.0F), false);
+            guiGraphics.drawString(font, Component.literal("HE SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
+//        } else if (this.getWeaponIndex(0) == 2) {
+//            guiGraphics.drawString(font, Component.literal("CM SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
+//        } else if (this.getWeaponIndex(0) == 3) {
+//            guiGraphics.drawString(font, Component.literal("GRAPESHOT " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
+//        } else if (this.getWeaponIndex(0) == 4) {
+            int heat = this.getEntityData().get(COAX_HEAT);
+            guiGraphics.drawString(font, Component.literal(" 12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
         }
-
-
-        guiGraphics.drawString(font, Component.literal("CD  " + String.format("%.1f",coolDown) ), screenWidth / 2 + 15, screenHeight / 2 + 15, Mth.hsvToRgb( (1-coolDown / 6F)/ 4F, 1.0F, 1.0F), false);
-//        if (player == getNthEntity(1)) {
-//            System.out.println(2);
-//            if (this.getWeaponIndex(1) == 0) {
-//                preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_gun_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
-//            }
-//            if (this.getWeaponIndex(1) == 0) {
-//                double heat = 1 - this.getEntityData().get(HEAT) / 100.0F;
-//                guiGraphics.drawString(font, Component.literal(" 12.7MM NSVT " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, Mth.hsvToRgb((float) heat / 3.745318352059925F, 1.0F, 1.0F), false);
-//            }
-//        }
     }
 
     @OnlyIn(Dist.CLIENT)

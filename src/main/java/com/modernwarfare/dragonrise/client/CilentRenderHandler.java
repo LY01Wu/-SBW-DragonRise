@@ -1,7 +1,10 @@
 package com.modernwarfare.dragonrise.client;
 
 import com.modernwarfare.dragonrise.client.overlay.Z10MEOverlay;
+import com.modernwarfare.dragonrise.client.renderer.entity.ZTZ99ARenderer;
+import com.modernwarfare.dragonrise.init.ModEntities;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -10,5 +13,9 @@ public class CilentRenderHandler {
     @SubscribeEvent
     public static void registerGuiOverlays(RegisterGuiOverlaysEvent event) {
         event.registerBelowAll(Z10MEOverlay.ID,new Z10MEOverlay());
+    }
+    @SubscribeEvent
+    public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(ModEntities.ZTZ99A.get(), ZTZ99ARenderer::new);
     }
 }
