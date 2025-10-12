@@ -18,7 +18,7 @@ public class ModEntities {
             REGISTRY.register("ztz99a", () ->
                     EntityType.Builder.<ZTZ99AEntity>of(ZTZ99AEntity::new, MobCategory.MISC)
                             .setTrackingRange(64)
-                            .setUpdateInterval(1)
+                            .setUpdateInterval(2)
                             .setCustomClientFactory(ZTZ99AEntity::new)
                             .fireImmune()
                             .sized(4.0f, 2.9f)

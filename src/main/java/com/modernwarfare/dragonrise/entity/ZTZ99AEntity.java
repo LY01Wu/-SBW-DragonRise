@@ -22,6 +22,7 @@ import com.atsuishio.superbwarfare.network.message.receive.ShakeClientMessage;
 import com.atsuishio.superbwarfare.tools.*;
 import com.modernwarfare.dragonrise.config.server.DragonRiseServerConfig;
 import com.modernwarfare.dragonrise.init.DRModSounds;
+import com.modernwarfare.dragonrise.init.DRModtextures;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -73,7 +74,6 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 import com.modernwarfare.dragonrise.init.ModEntities;
-
 import java.util.List;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.blit;
@@ -298,6 +298,12 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
 //        if (getRightTrack() > 100) {
 //            setRightTrack(0);
 //        }
+        if (this.entityData.get(RELOAD_COOLDOWN) == 0 && reloadCompleteDisplayTime == 0) {
+            // 装填刚完成，开始显示计时
+            reloadCompleteDisplayTime = 20; // 20 ticks = 1秒
+        } else if (reloadCompleteDisplayTime > 0) {
+            reloadCompleteDisplayTime--;
+        }
 
         if (this.entityData.get(GUN_FIRE_TIME) > 0) {
             this.entityData.set(GUN_FIRE_TIME, this.entityData.get(GUN_FIRE_TIME) - 1);
@@ -578,11 +584,11 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
         }
 
         if (forwardInputDown) {
-            this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + (this.entityData.get(POWER) < 0 ? 0.002f : 0.0012f) * (1 + getXRot() / 55), 0.21f));
+            this.entityData.set(POWER, Math.min(this.entityData.get(POWER) + (this.entityData.get(POWER) < 0 ? 0.001f : 0.0008f) * (1 + getXRot() / 55), 0.15f));
         }
 
         if (backInputDown) {
-            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.entityData.get(POWER) > 0 ? 0.002f : 0.0012f) * (1 - getXRot() / 55), -0.025f));
+            this.entityData.set(POWER, Math.max(this.entityData.get(POWER) - (this.entityData.get(POWER) > 0 ? 0.001f : 0.0008f) * (1 - getXRot() / 55), -0.02f));
             if (rightInputDown) {
                 this.entityData.set(DELTA_ROT, this.entityData.get(DELTA_ROT) + 0.15f);
             } else if (this.leftInputDown) {
@@ -668,7 +674,7 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
 
         var worldPosition = switch (i) {
             case 0 -> transformPosition(transform, 0.8f, -0.7f, 0.3f);
-            case 1 -> transformPosition(transform, -0.5625f, 0.1f, -0.57275625f);
+            case 1 -> transformPosition(transform, -0.6308f, 0.1f, -0.21579375f);
             case 2 -> transformPosition(transformVehicle, 0.475f, 0.5f, 2.1f);
             case 3 -> transformPosition(transformVehicle, 1.625f, 0.5f, -5.125f);
             case 4 -> transformPosition(transformVehicle, -1.625f, 0.5f, -5.125f);
@@ -1125,7 +1131,8 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
     public ResourceLocation getVehicleIcon() {
         return new ResourceLocation(com.modernwarfare.dragonrise.Mod.MODID, "textures/vehicle_icon/ztz99a_icon.png");
     }
-
+    private int reloadCompleteDisplayTime = 0;
+    private long reloadCompleteTime = 0;
     @OnlyIn(Dist.CLIENT)
     @Override
     public void renderFirstPersonOverlay(GuiGraphics guiGraphics, PoseStack poseStack, Font font, Player player, int screenWidth, int screenHeight, float scale, int color) {
@@ -1142,28 +1149,61 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
         RenderSystem.setShaderColor(1, 1, 1, 1);
 
         // 准心
-        if (this.getWeapon(0).mainGun) {
-            RenderHelper.blit(poseStack, Mod.loc("textures/screens/land/tank_cannon_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
-        } else  {
-            RenderHelper.blit(poseStack, Mod.loc("textures/screens/land/lav_gun_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+        int seatIndex = this.getSeatIndex(player);
+        if (seatIndex == 0) {
+            if (this.getWeapon(0).mainGun) {
+                blit(poseStack, com.modernwarfare.dragonrise.Mod.loc("textures/hud/cn_tank_cannon_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+            } else  {
+                blit(poseStack, com.modernwarfare.dragonrise.Mod.loc("textures/hud/cn_tank_cannon_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH, color);
+            }
+        }else if (seatIndex == 1) {
+            // 二号位机枪手
+            preciseBlit(guiGraphics, Mod.loc("textures/screens/land/lav_gun_cross.png"), centerW, centerH, 0, 0.0F, scaledMinWH, scaledMinWH, scaledMinWH, scaledMinWH);
         }
 
         // 武器名称
         if (this.getWeaponIndex(0) == 0) {
-            guiGraphics.drawString(font, Component.literal("AP SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
+            guiGraphics.drawString(font, Component.literal("DTC-10 AP  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
         } else if (this.getWeaponIndex(0) == 1) {
-            guiGraphics.drawString(font, Component.literal("HE SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
-//        } else if (this.getWeaponIndex(0) == 2) {
-//            guiGraphics.drawString(font, Component.literal("CM SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
-//        } else if (this.getWeaponIndex(0) == 3) {
-//            guiGraphics.drawString(font, Component.literal("GRAPESHOT " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
-//        } else if (this.getWeaponIndex(0) == 4) {
+            guiGraphics.drawString(font, Component.literal("DTB-10 HE  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
+//      } else if (this.getWeaponIndex(0) == 2) {
+//          guiGraphics.drawString(font, Component.literal("CM SHELL  " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
+//      } else if (this.getWeaponIndex(0) == 3) {
+//          guiGraphics.drawString(font, Component.literal("GRAPESHOT " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
+        } else if (this.getWeaponIndex(0) == 2) {
             int heat = this.getEntityData().get(COAX_HEAT);
             guiGraphics.drawString(font, Component.literal(" 12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
         }
 
         float coolDown = this.getEntityData().get(RELOAD_COOLDOWN) / 20.0F;
-        guiGraphics.drawString(font, Component.literal("CD  " + String.format("%.1f",coolDown) ), screenWidth / 2 + 15, screenHeight / 2 + 15, Mth.hsvToRgb( (1-coolDown / 6F)/ 4F, 1.0F, 1.0F), false);
+
+// 获取当前时间（以tick为单位）
+        long currentTime = this.level().getGameTime();
+
+// 计算装填完成的时间点
+        if (coolDown <= 0 && this.getEntityData().get(RELOAD_COOLDOWN) == 0) {
+            // 如果这是装填完成的第一个tick，记录完成时间
+            if (this.reloadCompleteTime == 0) {
+                this.reloadCompleteTime = currentTime;
+            }
+
+            // 显示"装填完成"1秒钟
+            if (currentTime - this.reloadCompleteTime < 20) { // 20 ticks = 1秒
+                guiGraphics.drawString(font, Component.literal("装填完成"),
+                        screenWidth / 2 - 17, screenHeight / 2 + 40,
+                        0x00FF00, false);
+            }
+        } else {
+            // 重置完成时间
+            this.reloadCompleteTime = 0;
+
+            // 显示装填倒计时
+            if (coolDown > 0) {
+                guiGraphics.drawString(font, Component.literal("装填  " + String.format("%.1f", coolDown)),
+                        screenWidth / 2 - 20, screenHeight / 2 + 40,
+                        0xFF0000, false);
+            }
+        }
     }
 
     @OnlyIn(Dist.CLIENT)
