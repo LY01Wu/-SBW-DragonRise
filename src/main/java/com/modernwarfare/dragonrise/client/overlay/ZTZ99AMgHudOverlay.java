@@ -106,30 +106,31 @@ public class ZTZ99AMgHudOverlay implements IGuiOverlay {
 
     private void renderWeaponStatus(GuiGraphics guiGraphics, int screenWidth, int screenHeight,
                                     ZTZ99AEntity ztz99a, Player player) {
-        int ammoCount = ztz99a.getEntityData().get(ZTZ99AEntity.MG_AMMO);
         int heat = ztz99a.getEntityData().get(ZTZ99AEntity.HEAT);
 
-        // 计算颜色（根据热量）
-        float heatPercent = heat / 100.0F;
-        int textColor = Mth.hsvToRgb(0F, heatPercent, 1.0F);
-
-        // 渲染热量条（可选）
-        renderHeatBar(guiGraphics, screenWidth, screenHeight, heatPercent);
+        // 仅在枪管过热时显示热量条
+        if (heat > 0) {
+            float heatPercent = heat / 100.0F;
+            renderVerticalHeatBar(guiGraphics, screenWidth, screenHeight, heatPercent);
+        }
     }
 
-    private void renderHeatBar(GuiGraphics guiGraphics, int screenWidth, int screenHeight, float heatPercent) {
-        int barWidth = 80;
-        int barHeight = 4;
-        int x = screenWidth / 2 - barWidth / 2;
-        int y = screenHeight / 2 + 30;
+    private void renderVerticalHeatBar(GuiGraphics guiGraphics, int screenWidth, int screenHeight, float heatPercent) {
+        int barWidth = 3;
+        int barHeight = 80;
+        int margin = 20;
 
-        // 背景
+        int x = screenWidth - margin - barWidth;
+        int y = screenHeight / 2 - barHeight / 2;
+
+        // 背景（半透明黑色）
         guiGraphics.fill(x, y, x + barWidth, y + barHeight, 0x80000000);
 
-        // 热量填充
-        int heatWidth = (int) (barWidth * heatPercent);
+        // 热量填充（从下往上）
+        int heatHeight = (int) (barHeight * heatPercent);
         int heatColor = Mth.hsvToRgb(0F, heatPercent, 1.0F);
-        guiGraphics.fill(x, y, x + heatWidth, y + barHeight, heatColor | 0xFF000000);
+        guiGraphics.fill(x, y + barHeight - heatHeight, x + barWidth, y + barHeight, heatColor | 0xFF000000);
+
     }
 
     private void renderThirdPersonWeaponInfo(GuiGraphics guiGraphics, float x, float y,

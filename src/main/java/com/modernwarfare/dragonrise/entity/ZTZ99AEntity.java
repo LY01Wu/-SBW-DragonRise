@@ -1210,12 +1210,21 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
     @Override
     public void renderThirdPersonOverlay(GuiGraphics guiGraphics, Font font, Player player, int screenWidth, int screenHeight, float scale) {
         if (this.getWeaponIndex(0) == 0) {
-            guiGraphics.drawString(font, Component.literal("AP SHELL " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), 30, -9, -1, false);
+            guiGraphics.drawString(font, Component.literal("DTC-10 AP " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), 30, -9, -1, false);
         } else if (this.getWeaponIndex(0) == 1) {
-            guiGraphics.drawString(font, Component.literal("HE SHELL " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), 30, -9, -1, false);
+            guiGraphics.drawString(font, Component.literal("DTB-10 HE " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), 30, -9, -1, false);
         } else if (this.getWeaponIndex(0) == 2) {
             double heat2 = this.getEntityData().get(COAX_HEAT) / 100.0F;
             guiGraphics.drawString(font, Component.literal("12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat2, 1.0F), false);
+        }
+
+        //在第三视角渲染装填时间
+        int coolDown = this.getEntityData().get(RELOAD_COOLDOWN);
+
+        if (coolDown > 0) {
+            float coolDownSeconds = coolDown / 20.0F;
+            guiGraphics.drawString(font, Component.literal("装填 " + String.format("%.1f", coolDownSeconds)),
+                    30, -25, 0xFFFFFF, false);
         }
     }
 
