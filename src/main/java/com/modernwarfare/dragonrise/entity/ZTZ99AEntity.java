@@ -75,6 +75,7 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 import com.modernwarfare.dragonrise.init.ModEntities;
 import java.util.List;
+import com.modernwarfare.dragonrise.init.DRModSounds;
 
 import static com.atsuishio.superbwarfare.client.RenderHelper.blit;
 import static com.atsuishio.superbwarfare.client.RenderHelper.preciseBlit;
@@ -152,19 +153,19 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
                                 .sound3p(DRModSounds.ZTZ99A_FIRE_3P.get())
                                 .sound3pFar(ModSounds.YX_100_FAR.get())
                                 .sound3pVeryFar(ModSounds.YX_100_VERYFAR.get()),
-                        // 同轴重机枪
+                        // 同轴轻机枪
                         new ProjectileWeapon()
-                                .damage(VehicleConfig.HEAVY_MACHINE_GUN_DAMAGE.get())
+                                .damage(8)
                                 .headShot(2)
                                 .zoom(false)
-                                .bypassArmorRate(0.4f)
+                                .bypassArmorRate(0.45f)
                                 .ammo(ModItems.HEAVY_AMMO.get())
                                 .sound(ModSounds.INTO_CANNON.get())
-                                .icon(Mod.loc("textures/screens/vehicle_weapon/gun_12_7mm.png"))
-                                .sound1p(ModSounds.M_2_HB_FIRE_1P.get())
-                                .sound3p(ModSounds.M_2_HB_FIRE_3P.get())
-                                .sound3pFar(ModSounds.M_2_HB_FAR.get())
-                                .sound3pVeryFar(ModSounds.M_2_HB_VERYFAR.get()),
+                                .icon(com.modernwarfare.dragonrise.Mod.loc("textures/hud/hud_5_8mm.png"))
+                                .sound1p(SoundEvent.createVariableRangeEvent(com.modernwarfare.dragonrise.Mod.loc("textures/sounds/ztz99a/qjy88_shoot.ogg")))
+                                .sound3p(SoundEvent.createVariableRangeEvent(com.modernwarfare.dragonrise.Mod.loc("textures/sounds/ztz99a/qjy88_shoot_3p.ogg")))
+                                .sound3pFar(ModSounds.QBZ_191_FAR.get())
+                                .sound3pVeryFar(ModSounds.QBZ_191_VERYFAR.get()),
                 },
                 new VehicleWeapon[]{
                         // 机枪
@@ -970,7 +971,7 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
             if (getWeaponIndex(0) == 0 || getWeaponIndex(0) == 1) {
                 return 10;
             } else if (getWeaponIndex(0) == 2) {
-                return 500;
+                return 750;
             }
         }
 
@@ -1172,7 +1173,7 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
 //          guiGraphics.drawString(font, Component.literal("GRAPESHOT " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), screenWidth / 2 - 33, screenHeight - 65, color, false);
         } else if (this.getWeaponIndex(0) == 2) {
             int heat = this.getEntityData().get(COAX_HEAT);
-            guiGraphics.drawString(font, Component.literal(" 12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
+            guiGraphics.drawString(font, Component.literal(" 5.8MM MG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), screenWidth / 2 - 33, screenHeight - 65, MathTool.getGradientColor(color, 0xFF0000, heat, 2), false);
         }
 
         float coolDown = this.getEntityData().get(RELOAD_COOLDOWN) / 20.0F;
@@ -1215,7 +1216,7 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
             guiGraphics.drawString(font, Component.literal("DTB-10 HE " + this.getAmmoCount(player) + " " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getEntityData().get(AMMO))), 30, -9, -1, false);
         } else if (this.getWeaponIndex(0) == 2) {
             double heat2 = this.getEntityData().get(COAX_HEAT) / 100.0F;
-            guiGraphics.drawString(font, Component.literal("12.7MM HMG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat2, 1.0F), false);
+            guiGraphics.drawString(font, Component.literal("5.8MM MG " + (InventoryTool.hasCreativeAmmoBox(player) ? "∞" : this.getAmmoCount(player))), 30, -9, Mth.hsvToRgb(0F, (float) heat2, 1.0F), false);
         }
 
         //在第三视角渲染装填时间

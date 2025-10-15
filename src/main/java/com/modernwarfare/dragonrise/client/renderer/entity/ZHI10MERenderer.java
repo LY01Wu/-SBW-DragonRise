@@ -27,9 +27,9 @@ public class ZHI10MERenderer extends GeoEntityRenderer<ZHI10MEEntity> {
     }
 
     public void preRender(PoseStack poseStack,ZHI10MEEntity entity, BakedGeoModel model, MultiBufferSource bufferSource, VertexConsumer buffer, boolean isReRender, float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        float scale = 0.75F;
-        this.scaleHeight = scale;
-        this.scaleWidth = scale;
+//        float scale = 0.75F;
+//        this.scaleHeight = scale;
+//        this.scaleWidth = scale;
         super.preRender(poseStack, entity, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
     }
 
@@ -76,7 +76,18 @@ public class ZHI10MERenderer extends GeoEntityRenderer<ZHI10MEEntity> {
                     -80 * Mth.DEG_TO_RAD, 2.5 * Mth.DEG_TO_RAD)
             );
         }
+        // 光电球支架 - 水平转动
+        if (name.equals("lightboll")) {
+            float gunYRot = Mth.lerp(partialTick, animatable.gunYRotO, animatable.getGunYRot());
+            bone.setRotY(gunYRot * Mth.DEG_TO_RAD);
+        }
 
+        // 光电球本体 - 竖直转动
+        if (name.equals("boll")) {
+            float gunXRot = Mth.lerp(partialTick, animatable.gunXRotO, animatable.getGunXRot());
+            float clampedXRot = Mth.clamp(gunXRot, -60.0F, 30.0F);  // 限制俯仰角度
+            bone.setRotX(-clampedXRot * Mth.DEG_TO_RAD);
+        }
         super.renderRecursively(poseStack, animatable, bone, renderType, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
     }
 }
