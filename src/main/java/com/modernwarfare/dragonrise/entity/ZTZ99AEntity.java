@@ -542,6 +542,7 @@ public class ZTZ99AEntity extends ContainerMobileVehicleEntity implements GeoEnt
                 return;
             }
 
+            
             ProjectileWeapon projectile = (ProjectileWeapon)this.getWeapon(1);
             ProjectileEntity projectileEntity = projectile.create(living).setGunItemId(this.getType().getDescriptionId() + ".2");
             projectileEntity.setPos(this.passengerWeaponShootPos(living, 1.0F).x, this.passengerWeaponShootPos(living, 1.0F).y, this.passengerWeaponShootPos(living, 1.0F).z);

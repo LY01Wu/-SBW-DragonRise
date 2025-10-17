@@ -2,8 +2,8 @@ package com.modernwarfare.dragonrise.entity;
 
 import com.atsuishio.superbwarfare.Mod;
 import com.atsuishio.superbwarfare.config.server.ExplosionConfig;
-import com.atsuishio.superbwarfare.entity.projectile.WgMissileEntity;
-import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.projectile.ExplosiveProjectile;
+import com.atsuishio.superbwarfare.entity.projectile.FastThrowableProjectile;
 import com.atsuishio.superbwarfare.entity.vehicle.damage.DamageModifier;
 import com.atsuishio.superbwarfare.init.ModDamageTypes;
 import com.atsuishio.superbwarfare.init.ModItems;
@@ -12,8 +12,7 @@ import com.atsuishio.superbwarfare.network.message.receive.ClientIndicatorMessag
 import com.atsuishio.superbwarfare.tools.CustomExplosion;
 import com.atsuishio.superbwarfare.tools.DamageHandler;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import com.atsuishio.superbwarfare.tools.TraceTool;
-import com.atsuishio.superbwarfare.init.ModEntities;
+import com.modernwarfare.dragonrise.init.ModEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -38,6 +37,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.PlayMessages;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -50,9 +50,9 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 import java.util.UUID;
 
-public class AKD9Enity extends WgMissileEntity implements GeoEntity {
+public class AKD9Entity extends FastThrowableProjectile implements GeoEntity, ExplosiveProjectile {
 
-    public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(AKD9Enity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Float> HEALTH = SynchedEntityData.defineId(AKD9Entity.class, EntityDataSerializers.FLOAT);
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     private static final DamageModifier DAMAGE_MODIFIER = DamageModifier.createDefaultModifier();
@@ -64,13 +64,13 @@ public class AKD9Enity extends WgMissileEntity implements GeoEntity {
 
     public UUID launcherVehicle;
 
-    public AKD9Enity(EntityType<? extends WgMissileEntity> type, Level level) {  // 修改这里
+    public AKD9Entity(EntityType<? extends AKD9Entity> type, Level level) {  // 修改这里
         super(type, level);
         this.noCulling = true;
     }
 
-    public AKD9Enity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
-        this(ModEntities.WG_MISSILE.get(), level);  // 使用依赖模组的实体类型
+    public AKD9Entity(LivingEntity entity, Level level, float damage, float explosionDamage, float explosionRadius) {
+        this(ModEntities.AKD9.get(), level);  // 使用依赖模组的实体类型
         this.setOwner(entity);
         this.damage = damage;
         this.explosionDamage = explosionDamage;
@@ -78,8 +78,12 @@ public class AKD9Enity extends WgMissileEntity implements GeoEntity {
         this.durability = 50;
     }
 
-    public static AKD9Enity create(LivingEntity player) {
-        return new AKD9Enity(player, player.level(),
+    public AKD9Entity(PlayMessages.SpawnEntity packet, Level world) {
+        this(ModEntities.AKD9.get(), world);
+    }
+
+    public static AKD9Entity create(LivingEntity player) {
+        return new AKD9Entity(player, player.level(),
                 ExplosionConfig.WIRE_GUIDE_MISSILE_DAMAGE.get(),
                 ExplosionConfig.WIRE_GUIDE_MISSILE_EXPLOSION_DAMAGE.get(),
                 ExplosionConfig.WIRE_GUIDE_MISSILE_EXPLOSION_RADIUS.get());
@@ -227,33 +231,33 @@ public class AKD9Enity extends WgMissileEntity implements GeoEntity {
         super.tick();
 
         // 检查二号位是否有人，如果没人则自爆
-        if (this.launcherVehicle != null && this.tickCount > 5) {
-            // 正确的方式通过UUID获取实体
-            Entity vehicleEntity = null;
-            if (this.level() instanceof ServerLevel serverLevel) {
-                vehicleEntity = serverLevel.getEntity(this.launcherVehicle);
-            }
-
-            if (vehicleEntity instanceof ZHI10MEEntity helicopter) {
-                // 获取二号位乘客（炮手）
-                Entity gunner = helicopter.getNthEntity(1);
-                if (gunner == null) {
-                    // 二号位没人，导弹自爆
-                    if (this.level() instanceof ServerLevel) {
-                        causeExplode(position());
-                    }
-                    this.discard();
-                    return;
-                }
-            } else if (vehicleEntity == null) {
-                // 如果直升机实体不存在（可能被销毁），导弹也自爆
-                if (this.level() instanceof ServerLevel) {
-                    causeExplode(position());
-                }
-                this.discard();
-                return;
-            }
-        }
+//        if (this.launcherVehicle != null && this.tickCount > 5) {
+//            // 正确的方式通过UUID获取实体
+//            Entity vehicleEntity = null;
+//            if (this.level() instanceof ServerLevel serverLevel) {
+//                vehicleEntity = serverLevel.getEntity(this.launcherVehicle);
+//            }
+//
+//            if (vehicleEntity instanceof ZHI10MEEntity helicopter) {
+//                // 获取二号位乘客（炮手）
+//                Entity gunner = helicopter.getNthEntity(1);
+//                if (gunner == null) {
+//                    // 二号位没人，导弹自爆
+//                    if (this.level() instanceof ServerLevel) {
+//                        causeExplode(position());
+//                    }
+//                    this.discard();
+//                    return;
+//                }
+//            } else if (vehicleEntity == null) {
+//                // 如果直升机实体不存在（可能被销毁），导弹也自爆
+//                if (this.level() instanceof ServerLevel) {
+//                    causeExplode(position());
+//                }
+//                this.discard();
+//                return;
+//            }
+//        }
 
         largeTrail();
 
@@ -304,9 +308,9 @@ public class AKD9Enity extends WgMissileEntity implements GeoEntity {
                 Vec3 hitPos = result.getLocation();
 
                 toVec = this.position().vectorTo(hitPos).normalize();
-
+                Mod.LOGGER.info("hitPos: " + hitPos);
                 setDeltaMovement(getDeltaMovement().add(toVec.scale(0.8)));
-                this.setDeltaMovement(this.getDeltaMovement().multiply(0.8, 0.8, 0.8));
+                setDeltaMovement(this.getDeltaMovement().multiply(0.8, 0.8, 0.8));
             } else {
                 // 如果找不到直升机实体，导弹自爆
                 if (this.level() instanceof ServerLevel) {
@@ -326,7 +330,7 @@ public class AKD9Enity extends WgMissileEntity implements GeoEntity {
         destroyBlock();
     }
 
-    private PlayState movementPredicate(AnimationState<AKD9Enity> event) {
+    private PlayState movementPredicate(AnimationState<AKD9Entity> event) {
         return event.setAndContinue(RawAnimation.begin().thenLoop("animation.jvm.idle"));
     }
 
@@ -394,8 +398,8 @@ public class AKD9Enity extends WgMissileEntity implements GeoEntity {
         return true;
     }
 
-    public static AKD9Enity createWithLauncher(LivingEntity player, UUID launcherVehicle) {
-        AKD9Enity missile = new AKD9Enity(player, player.level(),
+    public static AKD9Entity createWithLauncher(LivingEntity player, UUID launcherVehicle) {
+        AKD9Entity missile = new AKD9Entity(player, player.level(),
                 ExplosionConfig.WIRE_GUIDE_MISSILE_DAMAGE.get(),
                 ExplosionConfig.WIRE_GUIDE_MISSILE_EXPLOSION_DAMAGE.get(),
                 ExplosionConfig.WIRE_GUIDE_MISSILE_EXPLOSION_RADIUS.get());

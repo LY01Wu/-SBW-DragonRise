@@ -1,7 +1,7 @@
 package com.modernwarfare.dragonrise.init;
 
 import com.modernwarfare.dragonrise.Mod;
-import com.modernwarfare.dragonrise.entity.AKD9Enity;
+import com.modernwarfare.dragonrise.entity.AKD9Entity;
 import com.modernwarfare.dragonrise.entity.ZHI10MEEntity;
 import com.modernwarfare.dragonrise.entity.ZTZ99AEntity;
 import net.minecraft.world.entity.Entity;
@@ -28,22 +28,22 @@ public class ModEntities {
             );
 
     public static final RegistryObject<EntityType<ZHI10MEEntity>> ZHI10ME = register("zhi10me",
-            EntityType.Builder.<ZHI10MEEntity>of(ZHI10MEEntity::new,MobCategory.MISC)
+            EntityType.Builder.<ZHI10MEEntity>of(ZHI10MEEntity::new, MobCategory.MISC)
                     .setTrackingRange(64)
                     .setUpdateInterval(1)
                     .setCustomClientFactory(ZHI10MEEntity::new)
                     .fireImmune()
-                    .sized(1.4f,2.9f)
+                    .sized(1.4f, 2.9f)
     );
 
-    public static final RegistryObject<EntityType<AKD9Enity>> AKD9 =
-            REGISTRY.register("akd9", () ->
-                    EntityType.Builder.<AKD9Enity>of(AKD9Enity::new, MobCategory.MISC)
-                            .sized(0.5F, 0.5F)
-                            .clientTrackingRange(4)
-                            .updateInterval(10)
-                            .build("akd9")
-            );
+    public static final RegistryObject<EntityType<AKD9Entity>> AKD9 = register("akd9",
+            EntityType.Builder.<AKD9Entity>of(AKD9Entity::new, MobCategory.MISC)
+                    .setTrackingRange(64)
+                    .sized(0.5F, 0.5F)
+                    .setCustomClientFactory(AKD9Entity::new)
+                    .clientTrackingRange(4)
+                    .setUpdateInterval(1)
+    );
 //    public static final RegistryObject<EntityType<AbstractVehicleEntity>> VEHICLE = register("vehicle",
 //            EntityType.Builder.<AbstractVehicleEntity>of(AbstractVehicleEntity::new, MobCategory.MISC)
 //                   .setTrackingRange(64)

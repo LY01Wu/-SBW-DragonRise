@@ -794,7 +794,8 @@ public class ZHI10MEEntity extends ContainerMobileVehicleEntity implements GeoEn
 
             else if (getWeaponIndex(1) == 1 && (this.getEntityData().get(LOADED_MISSILE) > 0 || hasCreativeAmmo)) {
                 // 使用新的创建方法
-                AKD9Enity missile = AKD9Enity.createWithLauncher(player, this.getUUID());
+                AKD9Entity missile = AKD9Entity.createWithLauncher(player, this.getUUID());
+                //WgMissileEntity missile = ((WgMissileWeapon) this.getWeapon(1)).create(player);
 
                 // 其余代码保持不变...
                 Vector4f worldPosition = null;

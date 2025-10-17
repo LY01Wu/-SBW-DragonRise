@@ -17,10 +17,10 @@ public class CilentRenderHandler {
     public static void registerGuiOverlays(RegisterGuiOverlaysEvent event) {
         event.registerBelowAll(Z10MEOverlay.ID,new Z10MEOverlay());
     }
-    @SubscribeEvent
-    public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        event.registerEntityRenderer(ModEntities.ZTZ99A.get(), ZTZ99ARenderer::new);
-    }
+//    @SubscribeEvent
+//    public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+//        event.registerEntityRenderer(ModEntities.ZTZ99A.get(), ZTZ99ARenderer::new);
+//    }
     @SubscribeEvent
     public static void registerOverlays(RegisterGuiOverlaysEvent event) {
         event.registerAboveAll(ZTZ99AMgHudOverlay.ID, new ZTZ99AMgHudOverlay());
