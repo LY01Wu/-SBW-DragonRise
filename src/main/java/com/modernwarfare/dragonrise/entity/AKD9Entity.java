@@ -271,7 +271,7 @@ public class AKD9Entity extends FastThrowableProjectile implements GeoEntity, Ex
             this.setDeltaMovement(this.getDeltaMovement().multiply(1.03, 1.03, 1.03));
         }
 
-        if (tickCount > 5 && this.getOwner() != null && this.launcherVehicle != null) {
+        if (tickCount > 3 && this.getOwner() != null && this.launcherVehicle != null) {
             // 正确的方式通过UUID获取实体
             Entity vehicleEntity = null;
             if (this.level() instanceof ServerLevel serverLevel) {
