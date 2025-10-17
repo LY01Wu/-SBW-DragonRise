@@ -547,6 +547,15 @@ public class ZHI10MEEntity extends ContainerMobileVehicleEntity implements GeoEn
     public Vec3 getBarrelVec(float pPartialTicks){
         return getGunnerVector(pPartialTicks);
     }
+
+    public Vec3 getGunnerEyePosition(float partialTicks) {
+        // 使用炮手位的变换矩阵来获取眼睛位置
+        Matrix4f transform = getGunTransform(partialTicks);
+        // 眼睛位置相对于炮塔的偏移（根据实际模型调整，这里假设眼睛在炮塔中心稍微上方）
+        Vector4f worldPosition = transformPosition(transform, 0F, 0.1F, 0F);
+        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+    }
+
     @Override
     public Matrix4f getVehicleTransform(float ticks) {
         Matrix4f transform = new Matrix4f();
@@ -660,6 +669,40 @@ public class ZHI10MEEntity extends ContainerMobileVehicleEntity implements GeoEn
         return (new Vec3(worldPosition.x, worldPosition.y, worldPosition.z)).vectorTo(new Vec3(worldPosition2.x, worldPosition2.y, worldPosition2.z)).normalize();
     }
 
+    // 获取光电球位置
+    public Vec3 getLightBallPosition(float partialTicks) {
+        Matrix4f transform = getLightBallTransform(partialTicks);
+        Vector4f worldPosition = transformPosition(transform, 0f, 0f, 0f);
+        return new Vec3(worldPosition.x, worldPosition.y, worldPosition.z);
+    }
+
+    // 获取光电球方向向量
+    public Vec3 getLightBallVector(float partialTicks) {
+        Matrix4f transform = getLightBallTransform(partialTicks);
+        Vector4f rootPosition = transformPosition(transform, 0, 0, 0);
+        Vector4f targetPosition = transformPosition(transform, 0, 0, 1);
+        return new Vec3(rootPosition.x, rootPosition.y, rootPosition.z)
+                .vectorTo(new Vec3(targetPosition.x, targetPosition.y, targetPosition.z))
+                .normalize();
+    }
+
+    // 光电球变换矩阵
+    public Matrix4f getLightBallTransform(float ticks) {
+        Matrix4f transformT = getVehicleTransform(ticks);
+
+        // 应用光电球支架的水平旋转
+        transformT.rotate(Axis.YP.rotationDegrees(
+                Mth.lerp(ticks, gunYRotO, getGunYRot())
+        ));
+
+        // 应用光电球本体的垂直旋转
+        float gunXRot = Mth.lerp(ticks, gunXRotO, getGunXRot());
+        float clampedXRot = Mth.clamp(gunXRot, -90.0F, 30.0F);
+        transformT.rotate(Axis.XP.rotationDegrees(-clampedXRot));
+
+        return transformT;
+    }
+
     @Override
     public void vehicleShoot(LivingEntity player, int type) {
         boolean hasCreativeAmmo = false;
@@ -750,8 +793,11 @@ public class ZHI10MEEntity extends ContainerMobileVehicleEntity implements GeoEn
             }
 
             else if (getWeaponIndex(1) == 1 && (this.getEntityData().get(LOADED_MISSILE) > 0 || hasCreativeAmmo)) {
-                WgMissileEntity wgMissileEntity = ((WgMissileWeapon) getWeapon(1)).create(player);
-                Vector4f worldPosition;
+                // 使用新的创建方法
+                AKD9Enity missile = AKD9Enity.createWithLauncher(player, this.getUUID());
+
+                // 其余代码保持不变...
+                Vector4f worldPosition = null;
                 if (this.fireWGIndex == 0) {
                     worldPosition = this.transformPosition(transform, 1.7F, -0.83F, 0.8F);
                     this.fireWGIndex = 1;
@@ -759,9 +805,11 @@ public class ZHI10MEEntity extends ContainerMobileVehicleEntity implements GeoEn
                     worldPosition = this.transformPosition(transform, -1.7F, -0.83F, 0.8F);
                     this.fireWGIndex = 0;
                 }
-                wgMissileEntity.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
-                wgMissileEntity.shoot(getGunnerVector(1).x, getGunnerVector(1).y, getGunnerVector(1).z,  projectileVelocity(player), 0f);
-                player.level().addFreshEntity(wgMissileEntity);
+                Vec3 forwardVector = this.getViewVector(1.0F);
+
+                missile.setPos(worldPosition.x, worldPosition.y, worldPosition.z);
+                missile.shoot(forwardVector.x, forwardVector.y, forwardVector.z, projectileVelocity(player), 0f);
+                player.level().addFreshEntity(missile);
                 playShootSound3p(player, 0, 6, 0, 0, getTurretShootPos(player, 1));
 
                 this.entityData.set(LOADED_MISSILE, this.getEntityData().get(LOADED_MISSILE) - 1);
