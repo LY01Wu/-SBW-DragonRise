@@ -800,10 +800,10 @@ public class ZHI10MEEntity extends ContainerMobileVehicleEntity implements GeoEn
                 // 其余代码保持不变...
                 Vector4f worldPosition = null;
                 if (this.fireWGIndex == 0) {
-                    worldPosition = this.transformPosition(transform, 1.7F, -0.83F, 0.8F);
+                    worldPosition = this.transformPosition(transform, 2.3125F, -0.3F, 0.5F);
                     this.fireWGIndex = 1;
                 } else {
-                    worldPosition = this.transformPosition(transform, -1.7F, -0.83F, 0.8F);
+                    worldPosition = this.transformPosition(transform, -2.3125F, -0.3F, 0.5F);
                     this.fireWGIndex = 0;
                 }
                 Vec3 forwardVector = this.getViewVector(1.0F);
@@ -891,7 +891,7 @@ public class ZHI10MEEntity extends ContainerMobileVehicleEntity implements GeoEn
         return entity == getNthEntity(0) ? 2 : 0;
     }
     public ResourceLocation getVehicleIcon() {
-        return com.modernwarfare.dragonrise.Mod.loc("textures/vehicle_icon/Z10_icon.png");
+        return com.modernwarfare.dragonrise.Mod.loc("textures/vehicle_icon/zhi10me_icon.png");
     }
 
     public double getSensitivity(double original, boolean zoom, int seatIndex, boolean isOnGround) {
@@ -983,7 +983,7 @@ public class ZHI10MEEntity extends ContainerMobileVehicleEntity implements GeoEn
     }
 
     public @Nullable ResourceLocation getVehicleItemIcon() {
-        return com.modernwarfare.dragonrise.Mod.loc("textures/vehicle_icon.png");
+        return Mod.loc("textures/gui/vehicle/type/aircraft.png");
     }
 
     public List<OBB> getOBBs() {
