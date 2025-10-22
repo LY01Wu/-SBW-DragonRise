@@ -20,8 +20,10 @@ public class ModTabs {
                     .icon(() -> new ItemStack(ModItems.CONTAINER.get()))
                     .displayItems((param, output) -> {
                                 //output.accept(ContainerBlockItem.createInstance(ModEntities.TOM_7.get()));
-                                output.accept(ContainerBlockItem.createInstance(ModEntities.ZTZ99A.get()));
-                                output.accept(ContainerBlockItem.createInstance(ModEntities.ZHI10ME.get()));
+                        output.accept(ContainerBlockItem.createInstance(ModEntities.ZTZ99A.get()));
+                        output.accept(ContainerBlockItem.createInstance(ModEntities.ZBD04A.get()));
+                        output.accept(ContainerBlockItem.createInstance(ModEntities.ZHI10ME.get()));
+
                             }
                     )
                     .build());

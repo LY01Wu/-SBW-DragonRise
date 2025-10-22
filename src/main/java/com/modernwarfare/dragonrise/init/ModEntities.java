@@ -2,6 +2,7 @@ package com.modernwarfare.dragonrise.init;
 
 import com.modernwarfare.dragonrise.Mod;
 import com.modernwarfare.dragonrise.entity.AKD9Entity;
+import com.modernwarfare.dragonrise.entity.ZBD04AEntity;
 import com.modernwarfare.dragonrise.entity.ZHI10MEEntity;
 import com.modernwarfare.dragonrise.entity.ZTZ99AEntity;
 import net.minecraft.world.entity.Entity;
@@ -25,6 +26,17 @@ public class ModEntities {
                             .fireImmune()
                             .sized(4.0f, 2.9f)
                             .build("ztz99a")
+            );
+
+    public static final RegistryObject<EntityType<ZBD04AEntity>> ZBD04A =
+            REGISTRY.register("zbd04a", () ->
+                    EntityType.Builder.<ZBD04AEntity>of(ZBD04AEntity::new, MobCategory.MISC)
+                            .setTrackingRange(64)
+                            .setUpdateInterval(2)
+                            .setCustomClientFactory(ZBD04AEntity::new)
+                            .fireImmune()
+                            .sized(3.1f, 2f)
+                            .build("zbd04a")
             );
 
     public static final RegistryObject<EntityType<ZHI10MEEntity>> ZHI10ME = register("zhi10me",

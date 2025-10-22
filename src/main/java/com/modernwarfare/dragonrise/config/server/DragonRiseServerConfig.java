@@ -23,6 +23,15 @@ public class DragonRiseServerConfig {
     public static ForgeConfigSpec.DoubleValue ZHI10ME_ROCKET_EXPLOSION_RADIUS;
     public static ForgeConfigSpec.BooleanValue ZHI10ME_CANNON_DESTROY;
 
+    public static ForgeConfigSpec.IntValue ZBD04A_ENERGY_COST;
+    public static ForgeConfigSpec.IntValue ZBD04A_CANNON_COOLDOWN;
+    public static ForgeConfigSpec.IntValue ZBD04A_AP_CANNON_DAMAGE;
+//    public static ForgeConfigSpec.IntValue ZBD04A_AP_CANNON_EXPLOSION_DAMAGE;
+//    public static ForgeConfigSpec.DoubleValue ZBD04A_AP_CANNON_EXPLOSION_RADIUS;
+    public static ForgeConfigSpec.IntValue ZBD04A_HE_CANNON_DAMAGE;
+    public static ForgeConfigSpec.IntValue ZBD04A_HE_CANNON_EXPLOSION_DAMAGE;
+    public static ForgeConfigSpec.DoubleValue ZBD04A_HE_CANNON_EXPLOSION_RADIUS;
+
 
     public static void init(ForgeConfigSpec.Builder builder) {
         builder.push("vehicle");
@@ -54,6 +63,32 @@ public class DragonRiseServerConfig {
         ZTZ99A_HE_CANNON_EXPLOSION_RADIUS = builder.defineInRange("ZTZ99A_he_cannon_explosion_radius", 10d, 1d, 10000000d);
 
         builder.pop();
+
+        builder.push("ZBD-04A");
+
+        builder.comment("The energy cost of ZBD-04A per tick");
+        ZBD04A_ENERGY_COST = builder.defineInRange("ZBD04A_energy_cost", 128, 0, 2147483647);
+
+        builder.comment("The cannon cooldown of ZBD-04A");
+        ZBD04A_CANNON_COOLDOWN = builder.defineInRange("ZBD04A_cannon_cooldown", 80, 1, 10000000);
+
+        builder.comment("The cannon damage of ZBD-04A");
+        ZBD04A_AP_CANNON_DAMAGE = builder.defineInRange("ZBD04A_ap_cannon_damage", 500, 1, 10000000);
+
+//        builder.comment("The cannon explosion damage of ZBD-04A");
+//        ZBD04A_AP_CANNON_EXPLOSION_DAMAGE = builder.defineInRange("ZBD04A_ap_cannon_explosion_damage", 100, 1, 10000000);
+//
+//        builder.comment("The cannon explosion radius of ZBD-04A");
+//        ZBD04A_AP_CANNON_EXPLOSION_RADIUS = builder.defineInRange("ZBD04A_ap_cannon_explosion_radius", 4d, 1d, 10000000d);
+
+        builder.comment("The cannon damage of ZBD-04A");
+        ZBD04A_HE_CANNON_DAMAGE = builder.defineInRange("ZBD04A_he_cannon_damage", 150, 1, 10000000);
+
+        builder.comment("The cannon explosion damage of ZBD-04A");
+        ZBD04A_HE_CANNON_EXPLOSION_DAMAGE = builder.defineInRange("ZBD04A_he_cannon_explosion_damage", 150, 1, 10000000);
+
+        builder.comment("The cannon explosion radius of ZBD-04A");
+        ZBD04A_HE_CANNON_EXPLOSION_RADIUS = builder.defineInRange("ZBD04A_he_cannon_explosion_radius", 5d, 1d, 10000000d);
 
         builder.push("ZHI10ME");
         builder.comment("The min energy cost of AH-6 per tick");

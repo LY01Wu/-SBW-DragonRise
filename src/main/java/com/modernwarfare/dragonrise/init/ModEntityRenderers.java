@@ -4,6 +4,7 @@ import com.atsuishio.superbwarfare.client.renderer.entity.WgMissileRenderer;
 import com.modernwarfare.dragonrise.client.renderer.entity.AKD9Renderer;
 import com.modernwarfare.dragonrise.client.renderer.entity.ZHI10MERenderer;
 import com.modernwarfare.dragonrise.client.renderer.entity.ZTZ99ARenderer;
+import com.modernwarfare.dragonrise.client.renderer.entity.ZBD04ARenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -19,6 +20,7 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.ZTZ99A.get(), ZTZ99ARenderer::new);
         event.registerEntityRenderer(ModEntities.ZHI10ME.get(), ZHI10MERenderer::new);
         event.registerEntityRenderer(ModEntities.AKD9.get(), AKD9Renderer::new);
+        event.registerEntityRenderer(ModEntities.ZBD04A.get(), ZBD04ARenderer::new);
     }
 }
 

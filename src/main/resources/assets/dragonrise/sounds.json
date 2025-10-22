@@ -22,5 +22,13 @@
         "stream": false
       }
     ]
+  },
+  "zbd04a_reload": {
+    "sounds": [
+      {
+        "name": "dragonrise:ztz99a/zbd04a_reload",
+        "stream": false
+      }
+    ]
   }
 }
